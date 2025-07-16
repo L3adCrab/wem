@@ -6,8 +6,11 @@
     #define WEMDEF extern
     #else
     #define WEMDEF static
+    #define WEM_IMPLEMENTATION
     #endif
 #endif
+
+#ifdef WEM_IMPLEMENTATION
 
 #include "macros.h"
 #include "datatypes.h"
@@ -198,5 +201,30 @@ WEMDEF int wem_vec3_inRange(vec3 v1, vec3 v2, float range) {
 WEMDEF void wem_vec3_print(vec3 v) {
     printf("vec3(%f, %f, %f)\n", v.x, v.y, v.z);
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  OPERATORS
 
+#ifdef __cplusplus
+WEMDEF vec3 operator+(vec3 v1, vec3 v2) { return wem_vec3_add(v1, v2); }
+WEMDEF void operator+=(vec3 &v1, vec3 v2) { v1 = wem_vec3_add(v1, v2); }
+WEMDEF vec3 operator+(vec3 v, float f) { return wem_vec3_add3f(v, f, f, f); }
+WEMDEF void operator+=(vec3 &v, float f) { v = wem_vec3_add3f(v, f, f, f); }
+
+WEMDEF vec3 operator-(vec3 v1, vec3 v2) { return wem_vec3_sub(v1, v2); }
+WEMDEF void operator-=(vec3 &v1, vec3 v2) { v1 = wem_vec3_sub(v1, v2); }
+WEMDEF vec3 operator-(vec3 v, float f) { return wem_vec3_sub3f(v, f, f, f); }
+WEMDEF void operator-=(vec3 &v, float f) { v = wem_vec3_sub3f(v, f, f, f); }
+
+WEMDEF vec3 operator*(vec3 v1, vec3 v2) { return wem_vec3_mul(v1, v2); }
+WEMDEF void operator*=(vec3 &v1, vec3 v2) { v1 = wem_vec3_mul(v1, v2); }
+WEMDEF vec3 operator*(vec3 v, float f) { return wem_vec3_scale(v, f); }
+WEMDEF void operator*=(vec3 &v, float f) { v = wem_vec3_scale(v, f); }
+
+WEMDEF vec3 operator/(vec3 v1, vec3 v2) { return wem_vec3_div(v1, v2); }
+WEMDEF void operator/=(vec3 &v1, vec3 v2) { v1 = wem_vec3_div(v1, v2); }
+
+WEMDEF vec3 operator-(vec3 v) { return wem_vec3_inv(v); }
+#endif
+
+#endif
 #endif

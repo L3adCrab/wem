@@ -6,8 +6,11 @@
     #define WEMDEF extern
     #else
     #define WEMDEF static
+    #define WEM_IMPLEMENTATION
     #endif
 #endif
+
+#ifdef WEM_IMPLEMENTATION
 
 #include "macros.h"
 #include "datatypes.h"
@@ -20,7 +23,8 @@
 //  LINEAR
 
 WEMDEF bezier_linear wem_bezier_linear(vec3 beg, vec3 end) {
-    return {beg, end};
+    bezier_linear out = {beg, end};
+    return out;
 }
 WEMDEF vec3 wem_bezier_linearEvaluate(bezier_linear b, float t) {
     t = CLAMP(t, 0, 1);
@@ -31,7 +35,8 @@ WEMDEF vec3 wem_bezier_linearEvaluate(bezier_linear b, float t) {
 //  QUADRATIC
 
 WEMDEF bezier_quad wem_bezier_quad(vec3 beg, vec3 handle, vec3 end) {
-    return {beg, handle, end};
+    bezier_quad out = {beg, handle, end};
+    return out;
 }
 WEMDEF vec3 wem_bezier_quadEvaluate(bezier_quad b, float t) {
     t = CLAMP(t, 0, 1);
@@ -46,7 +51,8 @@ WEMDEF vec3 wem_bezier_quadEvaluate(bezier_quad b, float t) {
 //  CUBIC
 
 WEMDEF bezier_cubic wem_bezier_cubic(vec3 beg, vec3 handle1, vec3 handle2, vec3 end) {
-    return {beg, handle1, handle2, end, wem_bezier_quad(beg, handle1, handle2), wem_bezier_quad(handle1, handle2, end)};
+    bezier_cubic out = {beg, handle1, handle2, end, wem_bezier_quad(beg, handle1, handle2), wem_bezier_quad(handle1, handle2, end)};
+    return out;
 }
 WEMDEF void wem_bezier_cubicUpdate(bezier_cubic *b) {
     b->b0 = wem_bezier_quad(b->p0, b->p1, b->p2);
@@ -58,5 +64,5 @@ WEMDEF vec3 wem_bezier_cubicEvaluate(bezier_cubic b, float t) {
     return wem_vec3_add(wem_vec3_scale(wem_bezier_quadEvaluate(b.b0, t), 1.0f - t), wem_vec3_scale(wem_bezier_quadEvaluate(b.b1, t), t));
 }
 
-
+#endif
 #endif

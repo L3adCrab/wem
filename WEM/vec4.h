@@ -6,8 +6,11 @@
     #define WEMDEF extern
     #else
     #define WEMDEF static
+    #define WEM_IMPLEMENTATION
     #endif
 #endif
+
+#ifdef WEM_IMPLEMENTATION
 
 #include "macros.h"
 #include "datatypes.h"
@@ -194,5 +197,33 @@ WEMDEF int wem_vec4_inRange(vec4 v1, vec4 v2, float range) {
 WEMDEF void wem_vec4_print(vec4 v) {
     printf("vec4(%f, %f, %f, %f)\n", v.x, v.y, v.z, v.w);
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  OPERATORS
 
+#ifdef __cplusplus
+WEMDEF vec4 operator+(vec4 v1, vec4 v2) { return wem_vec4_add(v1, v2); }
+WEMDEF void operator+=(vec4 &v1, vec4 v2) { v1 = wem_vec4_add(v1, v2); }
+WEMDEF vec4 operator+(vec4 v, float f) { return wem_vec4_add4f(v, f, f, f, f); }
+WEMDEF void operator+=(vec4 &v, float f) { v = wem_vec4_add4f(v, f, f, f, f); }
+
+WEMDEF vec4 operator-(vec4 v1, vec4 v2) { return wem_vec4_sub(v1, v2); }
+WEMDEF void operator-=(vec4 &v1, vec4 v2) { v1 = wem_vec4_sub(v1, v2); }
+WEMDEF vec4 operator-(vec4 v, float f) { return wem_vec4_sub4f(v, f, f, f, f); }
+WEMDEF void operator-=(vec4 &v, float f) { v = wem_vec4_sub4f(v, f, f, f, f); }
+
+WEMDEF vec4 operator*(vec4 v1, vec4 v2) { return wem_vec4_mul(v1, v2); }
+WEMDEF void operator*=(vec4 &v1, vec4 v2) { v1 = wem_vec4_mul(v1, v2); }
+WEMDEF vec4 operator*(vec4 v, float f) { return wem_vec4_scale(v, f); }
+WEMDEF void operator*=(vec4 &v, float f) { v = wem_vec4_scale(v, f); }
+
+WEMDEF vec4 operator*(vec4 v, mat4 m) { return wem_vec4_mulMat4(v, m); }
+WEMDEF void operator*(vec4 &v, mat4 m) { v = wem_vec4_mulMat4(v, m); }
+
+WEMDEF vec4 operator/(vec4 v1, vec4 v2) { return wem_vec4_div(v1, v2); }
+WEMDEF void operator/=(vec4 &v1, vec4 v2) { v1 = wem_vec4_div(v1, v2); }
+
+WEMDEF vec4 operator-(vec4 v) { return wem_vec4_inv(v); }
+#endif
+
+#endif
 #endif

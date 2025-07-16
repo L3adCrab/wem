@@ -6,8 +6,11 @@
     #define WEMDEF extern
     #else
     #define WEMDEF static
+    #define WEM_IMPLEMENTATION
     #endif
 #endif
+
+#ifdef WEM_IMPLEMENTATION
 
 #include "macros.h"
 #include "datatypes.h"
@@ -259,4 +262,21 @@ WEMDEF void wem_mat4_print(mat4 m) {
     }
     printf("}\n");
 }
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  OPERATORS
+
+#ifdef __cplusplus
+WEMDEF mat4 operator+(mat4 m1, mat4 m2) { return wem_mat4_add(m1, m2); }
+WEMDEF void operator+=(mat4 &m1, mat4 m2) { m1 = wem_mat4_add(m1, m2); }
+
+WEMDEF mat4 operator-(mat4 m1, mat4 m2) { return wem_mat4_sub(m1, m2); }
+WEMDEF void operator-=(mat4 &m1, mat4 m2) { m1 = wem_mat4_sub(m1, m2); }
+
+WEMDEF mat4 operator*(mat4 m, float f) { return wem_mat4_scalarMul(m, f); }
+WEMDEF void operator*=(mat4 &m, float f) { m = wem_mat4_scalarMul(m, f); }
+WEMDEF mat4 operator*(mat4 m1, mat4 m2) { return wem_mat4_mul(m1, m2); }
+WEMDEF void operator*=(mat4 &m1, mat4 m2) { m1 = wem_mat4_mul(m1, m2); }
+#endif
+
+#endif
 #endif
