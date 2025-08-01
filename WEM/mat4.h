@@ -234,7 +234,7 @@ WEMDEF mat4 wem_mat4_ortho(float zoom, float aspectRatio, float near, float far)
             2.0f / (aspectRatio * 2) * zoom, 0, 0, 0,
             0, zoom, 0, 0,
             0, 0, -2.0f / (far - near), 0,
-            0, 0, -(far + near) / (far - near), 0
+            0, 0, -(far + near) / (far - near), 1
         };
     return out;
 }
