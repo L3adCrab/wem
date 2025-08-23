@@ -33,6 +33,24 @@ WEMDEF vec4 wem_vec4_zero() {
     vec4 out = {0, 0, 0, 0};
     return out;
 }
+
+WEMDEF vec4 *wem_vec4_allocNew(float x, float y, float z, float w) {
+    vec4 *out = (vec4*)malloc(sizeof(vec4));
+    out->x = x; out->y = y; out->z = z; out->w = w;
+    return out;
+}
+WEMDEF vec4 *wem_vec4_alloc(vec4 vec) {
+    vec4 *out = (vec4*)malloc(sizeof(vec4));
+    *out = vec;
+    return out;
+}
+WEMDEF void wem_vec4_setVec(vec4 *h, vec4 vec) {
+    *h = vec;
+}
+WEMDEF void wem_vec4_free(vec4 **h) {
+    free(*h);
+    *h = NULL;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  CONVERSION
 

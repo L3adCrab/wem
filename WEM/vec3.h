@@ -33,6 +33,24 @@ WEMDEF vec3 wem_vec3_zero() {
     vec3 out = {0, 0, 0};
     return out;
 }
+
+WEMDEF vec3 *wem_vec3_allocNew(float x, float y, float z) {
+    vec3 *out = (vec3*)malloc(sizeof(vec3));
+    out->x = x; out->y = y;
+    return out;
+}
+WEMDEF vec3 *wem_vec3_alloc(vec3 vec) {
+    vec3 *out = (vec3*)malloc(sizeof(vec3));
+    *out = vec;
+    return out;
+}
+WEMDEF void wem_vec3_setVec(vec3 *h, vec3 vec) {
+    *h = vec;
+}
+WEMDEF void wem_vec3_free(vec3 **h) {
+    free(*h);
+    *h = NULL;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  CONVERSION
 

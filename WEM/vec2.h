@@ -32,6 +32,24 @@ WEMDEF vec2 wem_vec2_zero() {
     vec2 out = {0, 0};
     return out;
 }
+
+WEMDEF vec2 *wem_vec2_allocNew(float x, float y) {
+    vec2 *out = (vec2*)malloc(sizeof(vec2));
+    out->x = x; out->y = y;
+    return out;
+}
+WEMDEF vec2 *wem_vec2_alloc(vec2 vec) {
+    vec2 *out = (vec2*)malloc(sizeof(vec2));
+    *out = vec;
+    return out;
+}
+WEMDEF void wem_vec2_setVec(vec2 *h, vec2 vec) {
+    *h = vec;
+}
+WEMDEF void wem_vec2_free(vec2 **h) {
+    free(*h);
+    *h = NULL;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  CONVERSION
 

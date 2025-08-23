@@ -32,8 +32,21 @@ WEMDEF mat4 wem_mat4_identity() {
         0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
-        };
+    };
     return out;
+}
+
+WEMDEF mat4 *wem_mat4_alloc(mat4 mat) {
+    mat4 *out = (mat4*)malloc(sizeof(mat4));
+    *out = mat;
+    return out;
+}
+WEMDEF void wem_mat4_setMat(mat4 *h, mat4 mat) {
+    *h = mat;
+}
+WEMDEF void wem_mat4_free(mat4 **h) {
+    free(*h);
+    *h = NULL;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ADDITION
