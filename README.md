@@ -1,4 +1,4 @@
-**WEM** (worthless engine math)
+**WEM**
 
 Basic C/C++ header only math library.
 
