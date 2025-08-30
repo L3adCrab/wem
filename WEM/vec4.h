@@ -1,16 +1,31 @@
 #ifndef wem_vec4_h
 #define wem_vec4_h
 
+/*///////////////////////////////////////////////////////////////////////////////////
+//  USAGE
+//  By default functions are defined as extern.
+//  To implement somewhere in source file before including header file
+//  #define WEM_IMPLEMENTATION
+//  Implementation should be defined only once.
+//  
+//  For use as static functions before including header file
+//  #define WEM_STATIC
+//  There if no need to define WEM_IMPLEMENTATION when using as static,
+//  although WEM_STATIC will need to be somewhere defined in every source file where
+//  library will be used. To circumvent this and whole library will be used as static
+//  add the WEM_STATIC define to compiler (gcc/clang -DWEM_STATIC)
+//
+//  To include all weu library in souce file at once, include weu_master.h  
+*////////////////////////////////////////////////////////////////////////////////////
+
 #ifndef WEMDEF
-    #ifdef WEM_EXTERN
-    #define WEMDEF extern
-    #else
+    #ifdef WEM_STATIC
     #define WEMDEF static
     #define WEM_IMPLEMENTATION
+    #else
+    #define WEMDEF extern
     #endif
 #endif
-
-#ifdef WEM_IMPLEMENTATION
 
 #include "macros.h"
 #include "datatypes.h"
@@ -21,85 +36,198 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
-WEMDEF vec4 wem_vec4(float x, float y, float z, float w) {
+WEMDEF vec4 wem_vec4(float x, float y, float z, float w);
+WEMDEF vec4 wem_vec4_1f(float f);
+WEMDEF vec4 wem_vec4_zero();
+
+WEMDEF vec4 *wem_vec4_allocNew(float x, float y, float z, float w);
+WEMDEF vec4 *wem_vec4_alloc(vec4 vec);
+WEMDEF void wem_vec4_setVec(vec4 *h, vec4 vec);
+WEMDEF void wem_vec4_free(vec4 **h);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  CONVERSION
+
+WEMDEF vec2 wem_vec4_toVec2(vec4 v);
+WEMDEF vec3 wem_vec4_toVec3(vec4 v);
+WEMDEF vec3 wem_vec4_homogenous(vec4 v);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ADDITION
+
+WEMDEF vec4 wem_vec4_add(vec4 v1, vec4 v2);
+WEMDEF vec4 wem_vec4_add4f(vec4 v, float x, float y, float z, float w);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  SUBTRACTION
+
+WEMDEF vec4 wem_vec4_sub(vec4 v1, vec4 v2);
+WEMDEF vec4 wem_vec4_sub4f(vec4 v, float x, float y, float z, float w);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  MULTIPLICATION
+
+WEMDEF vec4 wem_vec4_mul(vec4 v1, vec4 v2);
+WEMDEF vec4 wem_vec4_mul4f(vec4 v, float x, float y, float z, float w);
+WEMDEF vec4 wem_vec4_mulMat4(vec4 v, mat4 m);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  DIVISION
+
+WEMDEF vec4 wem_vec4_div(vec4 v1, vec4 v2);
+WEMDEF vec4 wem_vec4_div4f(vec4 v, float x, float y, float z, float w);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  SCALE
+
+WEMDEF vec4 wem_vec4_scale(vec4 v, float scale);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  INVERSE
+
+WEMDEF vec4 wem_vec4_inv(vec4 v);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  MAGNITUDE
+
+WEMDEF float wem_vec4_sqrMagnitude(vec4 v);
+WEMDEF float wem_vec4_magnitude(vec4 v);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  NORMALIZATION
+
+WEMDEF vec4 wem_vec4_norm(vec4 v);
+WEMDEF vec4 wem_vec4_norm4f(float x, float y, float z, float w);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  DOT
+
+WEMDEF float wem_vec4_dot(vec4 v1, vec4 v2);
+WEMDEF float wem_vec4_dotN(vec4 v1, vec4 v2);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  CROSS
+
+WEMDEF vec4 wem_vec4_cross(vec4 v1, vec4 v2);
+WEMDEF vec4 wem_vec4_crossN(vec4 v1, vec4 v2);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  INTERPOLATION
+
+WEMDEF vec4 wem_vec4_lerp(vec4 v1, vec4 v2, float t);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ANGLE
+
+float wem_vec4_angleInRad(vec4 v1, vec4 v2);
+float wem_vec4_angleInDeg(vec4 v1, vec4 v2);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  UTIL
+
+WEMDEF int wem_vec4_matches(vec4 v1, vec4 v2);
+WEMDEF int wem_vec4_inRange(vec4 v1, vec4 v2, float range);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  DEBUG
+
+WEMDEF void wem_vec4_print(vec4 v);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  OPERATORS
+
+#ifdef __cplusplus
+WEMDEF vec4 operator+(vec4 v1, vec4 v2);
+WEMDEF void operator+=(vec4 &v1, vec4 v2);
+WEMDEF vec4 operator+(vec4 v, float f);
+WEMDEF void operator+=(vec4 &v, float f);
+
+WEMDEF vec4 operator-(vec4 v1, vec4 v2);
+WEMDEF void operator-=(vec4 &v1, vec4 v2);
+WEMDEF vec4 operator-(vec4 v, float f);
+WEMDEF void operator-=(vec4 &v, float f);
+
+WEMDEF vec4 operator*(vec4 v1, vec4 v2);
+WEMDEF void operator*=(vec4 &v1, vec4 v2);
+WEMDEF vec4 operator*(vec4 v, float f);
+WEMDEF void operator*=(vec4 &v, float f);
+
+WEMDEF vec4 operator*(vec4 v, mat4 m);
+WEMDEF void operator*(vec4 &v, mat4 m);
+
+WEMDEF vec4 operator/(vec4 v1, vec4 v2);
+WEMDEF void operator/=(vec4 &v1, vec4 v2);
+
+WEMDEF vec4 operator-(vec4 v);
+#endif
+
+#ifdef WEM_IMPLEMENTATION
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ALLOCATION
+
+vec4 wem_vec4(float x, float y, float z, float w) {
     vec4 out = {x, y, z, w};
     return out;
 }
-WEMDEF vec4 wem_vec4_1f(float f) {
+vec4 wem_vec4_1f(float f) {
     vec4 out = {f, f, f, f};
     return out;
 }
-WEMDEF vec4 wem_vec4_zero() {
+vec4 wem_vec4_zero() {
     vec4 out = {0, 0, 0, 0};
     return out;
 }
 
-WEMDEF vec4 *wem_vec4_allocNew(float x, float y, float z, float w) {
+vec4 *wem_vec4_allocNew(float x, float y, float z, float w) {
     vec4 *out = (vec4*)malloc(sizeof(vec4));
     out->x = x; out->y = y; out->z = z; out->w = w;
     return out;
 }
-WEMDEF vec4 *wem_vec4_alloc(vec4 vec) {
+vec4 *wem_vec4_alloc(vec4 vec) {
     vec4 *out = (vec4*)malloc(sizeof(vec4));
     *out = vec;
     return out;
 }
-WEMDEF void wem_vec4_setVec(vec4 *h, vec4 vec) {
+void wem_vec4_setVec(vec4 *h, vec4 vec) {
     *h = vec;
 }
-WEMDEF void wem_vec4_free(vec4 **h) {
+void wem_vec4_free(vec4 **h) {
     free(*h);
     *h = NULL;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  CONVERSION
 
-WEMDEF vec2 wem_vec4_toVec2(vec4 v) {
+vec2 wem_vec4_toVec2(vec4 v) {
     vec2 out = {v.x, v.y};
     return out;
 }
-WEMDEF vec3 wem_vec4_toVec3(vec4 v) {
+vec3 wem_vec4_toVec3(vec4 v) {
     vec3 out = {v.x, v.y, v.z};
     return out;
 }
-WEMDEF vec3 wem_vec4_homogenous(vec4 v) {
+vec3 wem_vec4_homogenous(vec4 v) {
     vec3 out = {v.x / v.w, v.y / v.w, v.z / v.w};
     return out;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ADDITION
 
-WEMDEF vec4 wem_vec4_add(vec4 v1, vec4 v2) {
+vec4 wem_vec4_add(vec4 v1, vec4 v2) {
     v1.x += v2.x; v1.y += v2.y; v1.z += v2.z; v1.w += v2.w;
     return v1;
 }
-WEMDEF vec4 wem_vec4_add4f(vec4 v, float x, float y, float z, float w) {
+vec4 wem_vec4_add4f(vec4 v, float x, float y, float z, float w) {
     v.x += x; v.y += y; v.z += z; v.w += w;
     return v;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SUBTRACTION
 
-WEMDEF vec4 wem_vec4_sub(vec4 v1, vec4 v2) {
+vec4 wem_vec4_sub(vec4 v1, vec4 v2) {
     v1.x -= v2.x; v1.y -= v2.y; v1.z -= v2.z; v1.w -= v2.w;
     return v1;
 }
-WEMDEF vec4 wem_vec4_sub4f(vec4 v, float x, float y, float z, float w) {
+vec4 wem_vec4_sub4f(vec4 v, float x, float y, float z, float w) {
     v.x -= x; v.y -= y; v.z -= z; v.w -= w;
     return v;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  MULTIPLICATION
 
-WEMDEF vec4 wem_vec4_mul(vec4 v1, vec4 v2) {
+vec4 wem_vec4_mul(vec4 v1, vec4 v2) {
     v1.x *= v2.x; v1.y *= v2.y; v1.z *= v2.z; v1.w *= v2.w;
     return v1;
 }
-WEMDEF vec4 wem_vec4_mul4f(vec4 v, float x, float y, float z, float w) {
+vec4 wem_vec4_mul4f(vec4 v, float x, float y, float z, float w) {
     v.x *= x; v.y *= y; v.z *= z; v.w *= w;
     return v;
 }
-WEMDEF vec4 wem_vec4_mulMat4(vec4 v, mat4 m) {
+vec4 wem_vec4_mulMat4(vec4 v, mat4 m) {
     vec4 out = {
             v.x * m.v[0] + v.y * m.v[4] + v.z * m.v[8] + v.w * m.v[12],
             v.x * m.v[1] + v.y * m.v[5] + v.z * m.v[9] + v.w * m.v[13],
@@ -111,46 +239,46 @@ WEMDEF vec4 wem_vec4_mulMat4(vec4 v, mat4 m) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  DIVISION
 
-WEMDEF vec4 wem_vec4_div(vec4 v1, vec4 v2) {
+vec4 wem_vec4_div(vec4 v1, vec4 v2) {
     v1.x /= v2.x; v1.y /= v2.y; v1.z /= v2.z; v1.w /= v2.w;
     return v1;
 }
-WEMDEF vec4 wem_vec4_div4f(vec4 v, float x, float y, float z, float w) {
+vec4 wem_vec4_div4f(vec4 v, float x, float y, float z, float w) {
     v.x /= x; v.y /= y; v.z /= z; v.w /= w;
     return v;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SCALE
 
-WEMDEF vec4 wem_vec4_scale(vec4 v, float scale) {
+vec4 wem_vec4_scale(vec4 v, float scale) {
     v.x *= scale; v.y *= scale; v.z *= scale; v.w *= scale;
     return v;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  INVERSE
 
-WEMDEF vec4 wem_vec4_inv(vec4 v) {
+vec4 wem_vec4_inv(vec4 v) {
     v.x = -v.x; v.y = -v.y; v.z = -v.z; v.w = -v.w;
     return v;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  MAGNITUDE
 
-WEMDEF float wem_vec4_sqrMagnitude(vec4 v) {
+float wem_vec4_sqrMagnitude(vec4 v) {
     return POW2(v.x) + POW2(v.y) + POW2(v.z) + POW2(v.w);
 }
-WEMDEF float wem_vec4_magnitude(vec4 v) {
+float wem_vec4_magnitude(vec4 v) {
     return sqrt(wem_vec4_sqrMagnitude(v));
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  NORMALIZATION
 
-WEMDEF vec4 wem_vec4_norm(vec4 v) {
+vec4 wem_vec4_norm(vec4 v) {
     float l = wem_vec4_magnitude(v);
     v.x /= l; v.y /= l; v.z /= l; v.w /= l;
     return v;
 }
-WEMDEF vec4 wem_vec4_norm4f(float x, float y, float z, float w) {
+vec4 wem_vec4_norm4f(float x, float y, float z, float w) {
     float l = sqrt(POW2(x) + POW2(y) + POW2(z) + POW2(w));
     vec4 out = {x / l, y / l, z / l, w / l};
     return out;
@@ -158,23 +286,23 @@ WEMDEF vec4 wem_vec4_norm4f(float x, float y, float z, float w) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  DOT
 
-WEMDEF float wem_vec4_dot(vec4 v1, vec4 v2) {
+float wem_vec4_dot(vec4 v1, vec4 v2) {
     return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z + v1.w * v2.w;
 }
-WEMDEF float wem_vec4_dotN(vec4 v1, vec4 v2) {
+float wem_vec4_dotN(vec4 v1, vec4 v2) {
     return wem_vec4_dot(wem_vec4_norm(v1), wem_vec4_norm(v2));
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  CROSS
 
-WEMDEF vec4 wem_vec4_cross(vec4 v1, vec4 v2) {
+vec4 wem_vec4_cross(vec4 v1, vec4 v2) {
     vec4 out = {v1.y * v2.z - v1.z * v2.y,
                 v1.z * v2.x - v1.x * v2.z,
                 v1.x * v2.y - v1.y * v2.x,
                 1};
     return out;
 }
-WEMDEF vec4 wem_vec4_crossN(vec4 v1, vec4 v2) {
+vec4 wem_vec4_crossN(vec4 v1, vec4 v2) {
     v1 = wem_vec4_norm(v1); v2 = wem_vec4_norm(v2);
     vec4 out = {v1.y * v2.z - v1.z * v2.y,
                 v1.z * v2.x - v1.x * v2.z,
@@ -185,7 +313,7 @@ WEMDEF vec4 wem_vec4_crossN(vec4 v1, vec4 v2) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  INTERPOLATION
 
-WEMDEF vec4 wem_vec4_lerp(vec4 v1, vec4 v2, float t) {
+vec4 wem_vec4_lerp(vec4 v1, vec4 v2, float t) {
     vec4 out = wem_vec4_add(wem_vec4_scale(v1, 1.0f - t), wem_vec4_scale(v2, t));
     return out;
 }
@@ -202,45 +330,45 @@ float wem_vec4_angleInDeg(vec4 v1, vec4 v2) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  UTIL
 
-WEMDEF int wem_vec4_matches(vec4 v1, vec4 v2) {
+int wem_vec4_matches(vec4 v1, vec4 v2) {
     return v1.x == v2.x && v1.y == v2.y && v1.z == v2.z && v1.w == v2.w;
 }
-WEMDEF int wem_vec4_inRange(vec4 v1, vec4 v2, float range) {
+int wem_vec4_inRange(vec4 v1, vec4 v2, float range) {
     vec4 dir = wem_vec4_sub(v2, v1);
     return wem_vec4_sqrMagnitude(dir) <= POW2(range);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  DEBUG
 
-WEMDEF void wem_vec4_print(vec4 v) {
+void wem_vec4_print(vec4 v) {
     printf("vec4(%f, %f, %f, %f)\n", v.x, v.y, v.z, v.w);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  OPERATORS
 
 #ifdef __cplusplus
-WEMDEF vec4 operator+(vec4 v1, vec4 v2) { return wem_vec4_add(v1, v2); }
-WEMDEF void operator+=(vec4 &v1, vec4 v2) { v1 = wem_vec4_add(v1, v2); }
-WEMDEF vec4 operator+(vec4 v, float f) { return wem_vec4_add4f(v, f, f, f, f); }
-WEMDEF void operator+=(vec4 &v, float f) { v = wem_vec4_add4f(v, f, f, f, f); }
+vec4 operator+(vec4 v1, vec4 v2) { return wem_vec4_add(v1, v2); }
+void operator+=(vec4 &v1, vec4 v2) { v1 = wem_vec4_add(v1, v2); }
+vec4 operator+(vec4 v, float f) { return wem_vec4_add4f(v, f, f, f, f); }
+void operator+=(vec4 &v, float f) { v = wem_vec4_add4f(v, f, f, f, f); }
 
-WEMDEF vec4 operator-(vec4 v1, vec4 v2) { return wem_vec4_sub(v1, v2); }
-WEMDEF void operator-=(vec4 &v1, vec4 v2) { v1 = wem_vec4_sub(v1, v2); }
-WEMDEF vec4 operator-(vec4 v, float f) { return wem_vec4_sub4f(v, f, f, f, f); }
-WEMDEF void operator-=(vec4 &v, float f) { v = wem_vec4_sub4f(v, f, f, f, f); }
+vec4 operator-(vec4 v1, vec4 v2) { return wem_vec4_sub(v1, v2); }
+void operator-=(vec4 &v1, vec4 v2) { v1 = wem_vec4_sub(v1, v2); }
+vec4 operator-(vec4 v, float f) { return wem_vec4_sub4f(v, f, f, f, f); }
+void operator-=(vec4 &v, float f) { v = wem_vec4_sub4f(v, f, f, f, f); }
 
-WEMDEF vec4 operator*(vec4 v1, vec4 v2) { return wem_vec4_mul(v1, v2); }
-WEMDEF void operator*=(vec4 &v1, vec4 v2) { v1 = wem_vec4_mul(v1, v2); }
-WEMDEF vec4 operator*(vec4 v, float f) { return wem_vec4_scale(v, f); }
-WEMDEF void operator*=(vec4 &v, float f) { v = wem_vec4_scale(v, f); }
+vec4 operator*(vec4 v1, vec4 v2) { return wem_vec4_mul(v1, v2); }
+void operator*=(vec4 &v1, vec4 v2) { v1 = wem_vec4_mul(v1, v2); }
+vec4 operator*(vec4 v, float f) { return wem_vec4_scale(v, f); }
+void operator*=(vec4 &v, float f) { v = wem_vec4_scale(v, f); }
 
-WEMDEF vec4 operator*(vec4 v, mat4 m) { return wem_vec4_mulMat4(v, m); }
-WEMDEF void operator*(vec4 &v, mat4 m) { v = wem_vec4_mulMat4(v, m); }
+vec4 operator*(vec4 v, mat4 m) { return wem_vec4_mulMat4(v, m); }
+void operator*(vec4 &v, mat4 m) { v = wem_vec4_mulMat4(v, m); }
 
-WEMDEF vec4 operator/(vec4 v1, vec4 v2) { return wem_vec4_div(v1, v2); }
-WEMDEF void operator/=(vec4 &v1, vec4 v2) { v1 = wem_vec4_div(v1, v2); }
+vec4 operator/(vec4 v1, vec4 v2) { return wem_vec4_div(v1, v2); }
+void operator/=(vec4 &v1, vec4 v2) { v1 = wem_vec4_div(v1, v2); }
 
-WEMDEF vec4 operator-(vec4 v) { return wem_vec4_inv(v); }
+vec4 operator-(vec4 v) { return wem_vec4_inv(v); }
 #endif
 
 #endif

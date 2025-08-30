@@ -1,16 +1,31 @@
 #ifndef wem_mat4_h
 #define wem_mat4_h
 
+/*///////////////////////////////////////////////////////////////////////////////////
+//  USAGE
+//  By default functions are defined as extern.
+//  To implement somewhere in source file before including header file
+//  #define WEM_IMPLEMENTATION
+//  Implementation should be defined only once.
+//  
+//  For use as static functions before including header file
+//  #define WEM_STATIC
+//  There if no need to define WEM_IMPLEMENTATION when using as static,
+//  although WEM_STATIC will need to be somewhere defined in every source file where
+//  library will be used. To circumvent this and whole library will be used as static
+//  add the WEM_STATIC define to compiler (gcc/clang -DWEM_STATIC)
+//
+//  To include all weu library in souce file at once, include weu_master.h  
+*////////////////////////////////////////////////////////////////////////////////////
+
 #ifndef WEMDEF
-    #ifdef WEM_EXTERN
-    #define WEMDEF extern
-    #else
+    #ifdef WEM_STATIC
     #define WEMDEF static
     #define WEM_IMPLEMENTATION
+    #else
+    #define WEMDEF extern
     #endif
 #endif
-
-#ifdef WEM_IMPLEMENTATION
 
 #include "macros.h"
 #include "datatypes.h"
@@ -22,11 +37,94 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
-WEMDEF mat4 wem_mat4_zero() {
+WEMDEF mat4 wem_mat4_zero();
+WEMDEF mat4 wem_mat4_identity();
+
+WEMDEF mat4 *wem_mat4_alloc(mat4 mat);
+WEMDEF void wem_mat4_setMat(mat4 *h, mat4 mat);
+WEMDEF void wem_mat4_free(mat4 **h);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ADDITION
+
+WEMDEF mat4 wem_mat4_add(mat4 m1, mat4 m2);
+WEMDEF mat4 wem_mat4_add1f(mat4 m, char row, char column, float val);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  SUBTRACTION
+
+WEMDEF mat4 wem_mat4_sub(mat4 m1, mat4 m2);
+WEMDEF mat4 wem_mat4_sub1f(mat4 m, char row, char column, float val);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  MULTIPLICATION
+
+WEMDEF mat4 wem_mat4_scalarMul(mat4 m, float scale);
+WEMDEF mat4 wem_mat4_mul(mat4 m1, mat4 m2);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  TRANSPOSITION
+
+WEMDEF mat4 wem_mat4_transpose(mat4 m);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  TRANSLATION
+
+WEMDEF mat4 wem_mat4_translation(vec3 position);
+WEMDEF mat4 wem_mat4_setTranslation(mat4 m, vec3 position);
+WEMDEF mat4 wem_mat4_translate(mat4 m, vec3 position);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  SCALAR
+
+WEMDEF mat4 wem_mat4_scalar(vec3 scale);
+//  Sets 0th, 5th, and 10th value of matrix to x, y and z of scale respectively.
+//  Shouldn't be used with rotated matrix.
+WEMDEF mat4 wem_mat4_setScale(mat4 m, vec3 scale);
+WEMDEF mat4 wem_mat4_scale(mat4 m, vec3 scale);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ROTATION
+
+WEMDEF mat4 wem_mat4_roatationEuler(vec3 rotInDeg);
+WEMDEF mat4 wem_mat4_setRotationEuler(mat4 m, vec3 rotInDeg);
+WEMDEF mat4 wem_mat4_rotateEuler(mat4 m, vec3 rotInDeg);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  TRANSFORMATION
+
+WEMDEF mat4 wem_mat4_modelEuler(vec3 posisition, vec3 scale, vec3 rotInDeg);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  CAMERA
+
+WEMDEF mat4 wem_mat4_lookAt(vec3 position, vec3 target, vec3 camUp);
+WEMDEF mat4 wem_mat4_view(vec3 position, vec3 forward, vec3 camUp);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  PROJECTION
+
+WEMDEF mat4 wem_mat4_ortho(float zoom, float aspectRatio, float near, float far);
+WEMDEF mat4 wem_mat4_perspective(float fovDeg, float aspectRatio, float near, float far);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  DEBUG
+
+WEMDEF void wem_mat4_print(mat4 m);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  OPERATORS
+
+#ifdef __cplusplus
+WEMDEF mat4 operator+(mat4 m1, mat4 m2);
+WEMDEF void operator+=(mat4 &m1, mat4 m2);
+
+WEMDEF mat4 operator-(mat4 m1, mat4 m2);
+WEMDEF void operator-=(mat4 &m1, mat4 m2);
+
+WEMDEF mat4 operator*(mat4 m, float f);
+WEMDEF void operator*=(mat4 &m, float f);
+WEMDEF mat4 operator*(mat4 m1, mat4 m2);
+WEMDEF void operator*=(mat4 &m1, mat4 m2);
+#endif
+
+#ifdef WEM_IMPLEMENTATION
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  ALLOCATION
+
+mat4 wem_mat4_zero() {
     mat4 out = {0};
     return out;
 }
-WEMDEF mat4 wem_mat4_identity() {
+mat4 wem_mat4_identity() {
     mat4 out = {
         1, 0, 0, 0,
         0, 1, 0, 0,
@@ -36,54 +134,54 @@ WEMDEF mat4 wem_mat4_identity() {
     return out;
 }
 
-WEMDEF mat4 *wem_mat4_alloc(mat4 mat) {
+mat4 *wem_mat4_alloc(mat4 mat) {
     mat4 *out = (mat4*)malloc(sizeof(mat4));
     *out = mat;
     return out;
 }
-WEMDEF void wem_mat4_setMat(mat4 *h, mat4 mat) {
+void wem_mat4_setMat(mat4 *h, mat4 mat) {
     *h = mat;
 }
-WEMDEF void wem_mat4_free(mat4 **h) {
+void wem_mat4_free(mat4 **h) {
     free(*h);
     *h = NULL;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ADDITION
 
-WEMDEF mat4 wem_mat4_add(mat4 m1, mat4 m2) {
+mat4 wem_mat4_add(mat4 m1, mat4 m2) {
     for (int i = 0; i < 16; i++) {
         m1.v[i] += m2.v[i];
     }
     return m1;
 }
-WEMDEF mat4 wem_mat4_add1f(mat4 m, char row, char column, float val) {
+mat4 wem_mat4_add1f(mat4 m, char row, char column, float val) {
     m.v[4 * column + row] += val;
     return m;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SUBTRACTION
 
-WEMDEF mat4 wem_mat4_sub(mat4 m1, mat4 m2) {
+mat4 wem_mat4_sub(mat4 m1, mat4 m2) {
     for (int i = 0; i < 16; i++) {
         m1.v[i] -= m2.v[i];
     }
     return m1;
 }
-WEMDEF mat4 wem_mat4_sub1f(mat4 m, char row, char column, float val) {
+mat4 wem_mat4_sub1f(mat4 m, char row, char column, float val) {
     m.v[4 * column + row] -= val;
     return m;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  MULTIPLICATION
 
-WEMDEF mat4 wem_mat4_scalarMul(mat4 m, float scale) {
+mat4 wem_mat4_scalarMul(mat4 m, float scale) {
     for (int i = 0; i < 16; i++) {
         m.v[i] *= scale;
     }
     return m;
 }
-WEMDEF mat4 wem_mat4_mul(mat4 m1, mat4 m2) {
+mat4 wem_mat4_mul(mat4 m1, mat4 m2) {
     mat4 out = {0};
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
@@ -98,7 +196,7 @@ WEMDEF mat4 wem_mat4_mul(mat4 m1, mat4 m2) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  TRANSPOSITION
 
-WEMDEF mat4 wem_mat4_transpose(mat4 m) {
+mat4 wem_mat4_transpose(mat4 m) {
     mat4 out;
     for (int y = 0; y < 4; y++) {
         for (int x = 0; x < 4; x++) {
@@ -110,7 +208,7 @@ WEMDEF mat4 wem_mat4_transpose(mat4 m) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  TRANSLATION
 
-WEMDEF mat4 wem_mat4_translation(vec3 position) {
+mat4 wem_mat4_translation(vec3 position) {
     mat4 out = {
         1, 0, 0, 0,
         0, 1, 0, 0,
@@ -119,13 +217,13 @@ WEMDEF mat4 wem_mat4_translation(vec3 position) {
         };
     return out;
 }
-WEMDEF mat4 wem_mat4_setTranslation(mat4 m, vec3 position) {
+mat4 wem_mat4_setTranslation(mat4 m, vec3 position) {
     m.v[12] = position.x;
     m.v[13] = position.y;
     m.v[14] = position.z;
     return m;
 }
-WEMDEF mat4 wem_mat4_translate(mat4 m, vec3 position) {
+mat4 wem_mat4_translate(mat4 m, vec3 position) {
     m.v[12] += position.x;
     m.v[13] += position.y;
     m.v[14] += position.z;
@@ -134,7 +232,7 @@ WEMDEF mat4 wem_mat4_translate(mat4 m, vec3 position) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SCALAR
 
-WEMDEF mat4 wem_mat4_scalar(vec3 scale) {
+mat4 wem_mat4_scalar(vec3 scale) {
     mat4 out = {
         scale.x, 0, 0, 0,
         0, scale.y, 0, 0,
@@ -145,13 +243,13 @@ WEMDEF mat4 wem_mat4_scalar(vec3 scale) {
 }
 //  Sets 0th, 5th, and 10th value of matrix to x, y and z of scale respectively.
 //  Shouldn't be used with rotated matrix.
-WEMDEF mat4 wem_mat4_setScale(mat4 m, vec3 scale) {
+mat4 wem_mat4_setScale(mat4 m, vec3 scale) {
     m.v[0]  = scale.x;
     m.v[5]  = scale.y;
     m.v[10] = scale.z;
     return m;
 }
-WEMDEF mat4 wem_mat4_scale(mat4 m, vec3 scale) {
+mat4 wem_mat4_scale(mat4 m, vec3 scale) {
     m.v[0]  *= scale.x;
     m.v[5]  *= scale.y;
     m.v[10] *= scale.z;
@@ -160,7 +258,7 @@ WEMDEF mat4 wem_mat4_scale(mat4 m, vec3 scale) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ROTATION
 
-WEMDEF mat4 wem_mat4_roatationEuler(vec3 rotInDeg) {
+mat4 wem_mat4_roatationEuler(vec3 rotInDeg) {
     float x = DEG2RAD * rotInDeg.x, y = DEG2RAD * rotInDeg.y, z = DEG2RAD * rotInDeg.z;
     float sinX = sinf(x), sinY = sinf(y), sinZ = sinf(z);
     float cosX = cosf(x), cosY = cosf(y), cosZ = cosf(z);
@@ -174,7 +272,7 @@ WEMDEF mat4 wem_mat4_roatationEuler(vec3 rotInDeg) {
         };
     return out;
 }
-WEMDEF mat4 wem_mat4_setRotationEuler(mat4 m, vec3 rotInDeg) {
+mat4 wem_mat4_setRotationEuler(mat4 m, vec3 rotInDeg) {
     float x = DEG2RAD * rotInDeg.x, y = DEG2RAD * rotInDeg.y, z = DEG2RAD * rotInDeg.z;
     float sinX = sinf(x), sinY = sinf(y), sinZ = sinf(z);
     float cosX = cosf(x), cosY = cosf(y), cosZ = cosf(z);
@@ -185,13 +283,13 @@ WEMDEF mat4 wem_mat4_setRotationEuler(mat4 m, vec3 rotInDeg) {
     m.v[2] = cosY * -sinY;                      m.v[6] = sinX;          m.v[10] = cosX * cosY;
     return m;
 }
-WEMDEF mat4 wem_mat4_rotateEuler(mat4 m, vec3 rotInDeg) {
+mat4 wem_mat4_rotateEuler(mat4 m, vec3 rotInDeg) {
     return wem_mat4_mul(wem_mat4_roatationEuler(rotInDeg), m);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  TRANSFORMATION
 
-WEMDEF mat4 wem_mat4_modelEuler(vec3 posisition, vec3 scale, vec3 rotInDeg) {
+mat4 wem_mat4_modelEuler(vec3 posisition, vec3 scale, vec3 rotInDeg) {
     float x = DEG2RAD * rotInDeg.x, y = DEG2RAD * rotInDeg.y, z = DEG2RAD * rotInDeg.z;
     float sinX = sinf(x), sinY = sinf(y), sinZ = sinf(z);
     float cosX = cosf(x), cosY = cosf(y), cosZ = cosf(z);
@@ -208,7 +306,7 @@ WEMDEF mat4 wem_mat4_modelEuler(vec3 posisition, vec3 scale, vec3 rotInDeg) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  CAMERA
 
-WEMDEF mat4 wem_mat4_lookAt(vec3 position, vec3 target, vec3 camUp) {
+mat4 wem_mat4_lookAt(vec3 position, vec3 target, vec3 camUp) {
     vec3 forward    = wem_vec3_norm(wem_vec3_sub(target, position));
     vec3 right      = wem_vec3_cross(forward, camUp);
     vec3 up         = wem_vec3_cross(right, forward);
@@ -224,7 +322,7 @@ WEMDEF mat4 wem_mat4_lookAt(vec3 position, vec3 target, vec3 camUp) {
         };
     return out;
 }
-WEMDEF mat4 wem_mat4_view(vec3 position, vec3 forward, vec3 camUp) {
+mat4 wem_mat4_view(vec3 position, vec3 forward, vec3 camUp) {
     vec3 right      = wem_vec3_cross(forward, camUp);
     vec3 up         = wem_vec3_cross(right, forward);
     forward         = wem_vec3_inv(forward);
@@ -242,7 +340,7 @@ WEMDEF mat4 wem_mat4_view(vec3 position, vec3 forward, vec3 camUp) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  PROJECTION
 
-WEMDEF mat4 wem_mat4_ortho(float zoom, float aspectRatio, float near, float far) {
+mat4 wem_mat4_ortho(float zoom, float aspectRatio, float near, float far) {
     mat4 out = {
             2.0f / (aspectRatio * 2) * zoom, 0, 0, 0,
             0, zoom, 0, 0,
@@ -251,7 +349,7 @@ WEMDEF mat4 wem_mat4_ortho(float zoom, float aspectRatio, float near, float far)
         };
     return out;
 }
-WEMDEF mat4 wem_mat4_perspective(float fovDeg, float aspectRatio, float near, float far) {
+mat4 wem_mat4_perspective(float fovDeg, float aspectRatio, float near, float far) {
     float fov = DEG2RAD * fovDeg;
     mat4 out = {
             1.0f / (aspectRatio * tanf(fov / 2)), 0, 0, 0,
@@ -264,7 +362,7 @@ WEMDEF mat4 wem_mat4_perspective(float fovDeg, float aspectRatio, float near, fl
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  DEBUG
 
-WEMDEF void wem_mat4_print(mat4 m) {
+void wem_mat4_print(mat4 m) {
     printf("mat4 {\n");
     for (int y = 0; y < 4; y++) {
         printf(" ");
@@ -279,16 +377,16 @@ WEMDEF void wem_mat4_print(mat4 m) {
 //  OPERATORS
 
 #ifdef __cplusplus
-WEMDEF mat4 operator+(mat4 m1, mat4 m2) { return wem_mat4_add(m1, m2); }
-WEMDEF void operator+=(mat4 &m1, mat4 m2) { m1 = wem_mat4_add(m1, m2); }
+mat4 operator+(mat4 m1, mat4 m2) { return wem_mat4_add(m1, m2); }
+void operator+=(mat4 &m1, mat4 m2) { m1 = wem_mat4_add(m1, m2); }
 
-WEMDEF mat4 operator-(mat4 m1, mat4 m2) { return wem_mat4_sub(m1, m2); }
-WEMDEF void operator-=(mat4 &m1, mat4 m2) { m1 = wem_mat4_sub(m1, m2); }
+mat4 operator-(mat4 m1, mat4 m2) { return wem_mat4_sub(m1, m2); }
+void operator-=(mat4 &m1, mat4 m2) { m1 = wem_mat4_sub(m1, m2); }
 
-WEMDEF mat4 operator*(mat4 m, float f) { return wem_mat4_scalarMul(m, f); }
-WEMDEF void operator*=(mat4 &m, float f) { m = wem_mat4_scalarMul(m, f); }
-WEMDEF mat4 operator*(mat4 m1, mat4 m2) { return wem_mat4_mul(m1, m2); }
-WEMDEF void operator*=(mat4 &m1, mat4 m2) { m1 = wem_mat4_mul(m1, m2); }
+mat4 operator*(mat4 m, float f) { return wem_mat4_scalarMul(m, f); }
+void operator*=(mat4 &m, float f) { m = wem_mat4_scalarMul(m, f); }
+mat4 operator*(mat4 m1, mat4 m2) { return wem_mat4_mul(m1, m2); }
+void operator*=(mat4 &m1, mat4 m2) { m1 = wem_mat4_mul(m1, m2); }
 #endif
 
 #endif
