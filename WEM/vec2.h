@@ -30,6 +30,7 @@
 #include "macros.h"
 #include "datatypes.h"
 
+#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
 

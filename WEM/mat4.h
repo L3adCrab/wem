@@ -31,6 +31,7 @@
 #include "datatypes.h"
 #include "vec3.h"
 
+#include <stdlib.h>
 #include <math.h>
 #include <stdio.h>
 
