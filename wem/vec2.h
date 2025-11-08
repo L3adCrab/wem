@@ -30,10 +30,6 @@
 #include "macros.h"
 #include "datatypes.h"
 
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
@@ -102,6 +98,10 @@ WEMDEF vec2 wem_vec2_perpN(vec2 v);
 //  INTERPOLATION
 
 WEMDEF vec2 wem_vec2_lerp(vec2 v1, vec2 v2, float t);
+WEMDEF vec2 wem_vec2_smoothstep(vec2 v1, vec2 v2, float t);
+WEMDEF vec2 wem_vec2_smootherstep(vec2 v1, vec2 v2, float t);
+WEMDEF vec2 wem_vec2_smoothstep_inverse(vec2 v1, vec2 v2, float t);
+WEMDEF vec2 wem_vec2_smoothDamp(vec2 from, vec2 to, vec2 *velocity, float maxSpeed, float smoothTime, float timeDelta);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ANGLE
 
@@ -141,7 +141,16 @@ WEMDEF void operator/=(vec2 &v1, vec2 v2);
 WEMDEF vec2 operator-(vec2 v);
 #endif
 
+// #define WEM_IMPLEMENTATION
 #ifdef WEM_IMPLEMENTATION
+
+#include "mathf.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <string.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
@@ -251,7 +260,7 @@ float wem_vec2_sqrMagnitude(vec2 v) {
     return POW2(v.x) + POW2(v.y);
 }
 float wem_vec2_magnitude(vec2 v) {
-    return sqrt(wem_vec2_sqrMagnitude(v));
+    return sqrtf(wem_vec2_sqrMagnitude(v));
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  NORMALIZATION
@@ -262,7 +271,7 @@ vec2 wem_vec2_norm(vec2 v) {
     return v;
 }
 vec2 wem_vec2_norm2f(float x, float y) {
-    float l = sqrt(POW2(x) + POW2(y));
+    float l = sqrtf(POW2(x) + POW2(y));
     vec2 out = {x / l, y / l};
     return out;
 }
@@ -292,12 +301,73 @@ vec2 wem_vec2_lerp(vec2 v1, vec2 v2, float t) {
     vec2 out = wem_vec2_add(wem_vec2_scale(v1, 1.0f - t), wem_vec2_scale(v2, t));
     return out;
 }
+vec2 wem_vec2_smoothstep(vec2 v1, vec2 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smoothstep(v1.x, v2.x, t);
+    float y = wem_smoothstep(v1.y, v2.y, t);
+    return (vec2){x, y};
+}
+vec2 wem_vec2_smootherstep(vec2 v1, vec2 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smootherstep(v1.x, v2.x, t);
+    float y = wem_smootherstep(v1.y, v2.y, t);
+    return (vec2){x, y};
+}
+vec2 wem_vec2_smoothstep_inverse(vec2 v1, vec2 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smoothstep_Inverse(v1.x, v2.x, t);
+    float y = wem_smoothstep_Inverse(v1.y, v2.y, t);
+    return (vec2){x, y};
+}
+vec2 wem_vec2_smoothDamp(vec2 from, vec2 to, vec2 *velocity, float maxSpeed, float smoothTime, float timeDelta) {
+    vec2 out = wem_vec2_zero();
+
+    float omega = 2.0f / smoothTime;
+    float x     = omega * timeDelta;
+    float exp   = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+    
+    vec2 change = wem_vec2_sub(from, to);
+    vec2 ogTo   = to;
+
+    float maxChange     = maxSpeed * smoothTime;
+    float maxChangeSqr  = maxChange * maxChange;
+    float sqrMag        = wem_vec2_sqrMagnitude(change);
+    if (sqrMag > maxChangeSqr) {
+        float mag = sqrtf(sqrMag);
+        change.x = change.x / mag * maxChange;
+        change.y = change.y / mag * maxChange;
+    }
+
+    to = wem_vec2_sub(from, change);
+
+    vec2 temp = (vec2){
+        (velocity->x + omega * change.x) * timeDelta,
+        (velocity->y + omega * change.y) * timeDelta
+    };
+
+    velocity->x = (velocity->x - omega * temp.x) * exp;
+    velocity->y = (velocity->y - omega * temp.y) * exp;
+
+    out.x = to.x + (change.x + temp.x) * exp;
+    out.y = to.y + (change.y + temp.y) * exp;
+
+    vec2 ogMinusCurrent = wem_vec2_sub(ogTo, from);
+    vec2 outMinusOg     = wem_vec2_sub(out, ogTo);
+
+    if (wem_vec2_dot(ogMinusCurrent, outMinusOg) > 0) {
+        out = ogTo;
+        velocity->x = (out.x - ogTo.x) / timeDelta;
+        velocity->y = (out.y - ogTo.y) / timeDelta;
+    }
+
+    return out;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ANGLE
 
 float wem_vec2_angleInRad(vec2 v1, vec2 v2) {
     float dot = wem_vec2_dotN(v1, v2);
-    return acos(dot);
+    return acosf(dot);
 }
 float wem_vec2_angleInDeg(vec2 v1, vec2 v2) {
     return wem_vec2_angleInRad(v1, v2) * RAD2DEG; 

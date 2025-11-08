@@ -20,6 +20,7 @@
 
 #include "bezier.h"
 #include "mat4.h"
+#include "mathf.h"
 #include "random.h"
 #include "vec2.h"
 #include "vec3.h"

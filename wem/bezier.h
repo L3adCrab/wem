@@ -29,11 +29,6 @@
 
 #include "macros.h"
 #include "datatypes.h"
-#include "vec3.h"
-
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  LINEAR
@@ -54,6 +49,13 @@ WEMDEF vec3 wem_bezier_cubicEvaluate(bezier_cubic b, float t);
 
 
 #ifdef WEM_IMPLEMENTATION
+
+#include "vec3.h"
+
+#include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  LINEAR
 

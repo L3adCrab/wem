@@ -31,10 +31,6 @@
 #include "datatypes.h"
 #include "vec3.h"
 
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
@@ -118,6 +114,11 @@ WEMDEF void operator*=(mat4 &m1, mat4 m2);
 #endif
 
 #ifdef WEM_IMPLEMENTATION
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
@@ -126,12 +127,12 @@ mat4 wem_mat4_zero() {
     return out;
 }
 mat4 wem_mat4_identity() {
-    mat4 out = {
+    mat4 out = {{
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
         0, 0, 0, 1
-    };
+    }};
     return out;
 }
 
@@ -210,12 +211,12 @@ mat4 wem_mat4_transpose(mat4 m) {
 //  TRANSLATION
 
 mat4 wem_mat4_translation(vec3 position) {
-    mat4 out = {
+    mat4 out = {{
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
         position.x, position.y, position.z, 1
-        };
+        }};
     return out;
 }
 mat4 wem_mat4_setTranslation(mat4 m, vec3 position) {
@@ -234,12 +235,12 @@ mat4 wem_mat4_translate(mat4 m, vec3 position) {
 //  SCALAR
 
 mat4 wem_mat4_scalar(vec3 scale) {
-    mat4 out = {
+    mat4 out = {{
         scale.x, 0, 0, 0,
         0, scale.y, 0, 0,
         0, 0, scale.z, 0,
         0, 0, 0, 1
-        };
+        }};
     return out;
 }
 //  Sets 0th, 5th, and 10th value of matrix to x, y and z of scale respectively.
@@ -265,12 +266,12 @@ mat4 wem_mat4_roatationEuler(vec3 rotInDeg) {
     float cosX = cosf(x), cosY = cosf(y), cosZ = cosf(z);
     float sinXxsinY = -sinX * -sinY;
     float sinXxcosY = -sinX * cosY;
-    mat4 out = {
+    mat4 out = {{
             cosZ * cosY + -sinZ * sinXxsinY,        cosZ * cosY + cosZ * sinXxsinY,     cosY * -sinY,   0,
             -sinZ * cosX,                           cosZ * cosX,                        sinX,           0,
             cosZ * sinY + -sinZ * sinXxcosY,        sinZ * sinY + cosZ * sinXxcosY,  cosX * cosY,    0,
             0, 0, 0, 1
-        };
+        }};
     return out;
 }
 mat4 wem_mat4_setRotationEuler(mat4 m, vec3 rotInDeg) {
@@ -296,12 +297,12 @@ mat4 wem_mat4_modelEuler(vec3 posisition, vec3 scale, vec3 rotInDeg) {
     float cosX = cosf(x), cosY = cosf(y), cosZ = cosf(z);
     float sinXxsinY = -sinX * -sinY;
     float sinXxcosY = -sinX * cosY;
-    mat4 out = {
+    mat4 out = {{
             scale.x * (cosZ * cosY + -sinZ * sinXxsinY),    cosZ * cosY + cosZ * sinXxsinY,     cosY * -sinY,           0,
             -sinZ * cosX,                                   scale.y * cosZ * cosX,              sinX,                   0,
             cosZ * sinY + -sinZ * sinXxcosY,                sinZ * sinY + cosZ * sinXxcosY,     scale.z * cosX * cosY,  0,
             posisition.x, posisition.y, posisition.z, 1
-        };
+        }};
     return out;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -315,12 +316,12 @@ mat4 wem_mat4_lookAt(vec3 position, vec3 target, vec3 camUp) {
     float tx = wem_vec3_dot(position, right);
     float ty = wem_vec3_dot(position, up);
     float tz = wem_vec3_dot(position, forward);
-    mat4 out = {
-        right.x, up.x, forward.x, 0,
-        right.y, up.y, forward.y, 0,
-        right.z, up.z, forward.z, 0,
-        -tx, -ty, -tz, 1
-        };
+    mat4 out = {{
+            right.x, up.x, forward.x, 0,
+            right.y, up.y, forward.y, 0,
+            right.z, up.z, forward.z, 0,
+            -tx, -ty, -tz, 1
+        }};
     return out;
 }
 mat4 wem_mat4_view(vec3 position, vec3 forward, vec3 camUp) {
@@ -330,34 +331,34 @@ mat4 wem_mat4_view(vec3 position, vec3 forward, vec3 camUp) {
     float tx = wem_vec3_dot(position, right);
     float ty = wem_vec3_dot(position, up);
     float tz = wem_vec3_dot(position, forward);
-    mat4 out = {
-        right.x, up.x, forward.x, 0,
-        right.y, up.y, forward.y, 0,
-        right.z, up.z, forward.z, 0,
-        -tx, -ty, -tz, 1
-        };
+    mat4 out = {{
+            right.x, up.x, forward.x, 0,
+            right.y, up.y, forward.y, 0,
+            right.z, up.z, forward.z, 0,
+            -tx, -ty, -tz, 1
+        }};
     return out;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  PROJECTION
 
 mat4 wem_mat4_ortho(float zoom, float aspectRatio, float near, float far) {
-    mat4 out = {
+    mat4 out = {{
             2.0f / (aspectRatio * 2) * zoom, 0, 0, 0,
             0, zoom, 0, 0,
             0, 0, -2.0f / (far - near), 0,
             0, 0, -(far + near) / (far - near), 1
-        };
+        }};
     return out;
 }
 mat4 wem_mat4_perspective(float fovDeg, float aspectRatio, float near, float far) {
     float fov = DEG2RAD * fovDeg;
-    mat4 out = {
+    mat4 out = {{
             1.0f / (aspectRatio * tanf(fov / 2)), 0, 0, 0,
             0, 1.0f / tanf(fov / 2), 0, 0,
             0, 0, -(far + near) / (far - near), -1,
             0, 0, -(2 * far * near) / (far - near), 0
-        };
+        }};
     return out;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////

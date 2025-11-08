@@ -27,10 +27,6 @@
     #endif
 #endif
 
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SEED
 
@@ -48,6 +44,11 @@ WEMDEF float wem_random_float();
 WEMDEF float wem_random_floatRange(float min, float max);
 
 #ifdef WEM_IMPLEMENTATION
+
+#include <stdlib.h>
+#include <math.h>
+#include <time.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  SEED
 

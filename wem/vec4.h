@@ -30,10 +30,6 @@
 #include "macros.h"
 #include "datatypes.h"
 
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
@@ -104,6 +100,10 @@ WEMDEF vec4 wem_vec4_crossN(vec4 v1, vec4 v2);
 //  INTERPOLATION
 
 WEMDEF vec4 wem_vec4_lerp(vec4 v1, vec4 v2, float t);
+WEMDEF vec4 wem_vec4_smoothstep(vec4 v1, vec4 v2, float t);
+WEMDEF vec4 wem_vec4_smootherstep(vec4 v1, vec4 v2, float t);
+WEMDEF vec4 wem_vec4_smoothstep_inverse(vec4 v1, vec4 v2, float t);
+WEMDEF vec4 wem_vec4_smoothDamp(vec4 from, vec4 to, vec4 *velocity, float maxSpeed, float smoothTime, float timeDelta);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ANGLE
 
@@ -147,6 +147,14 @@ WEMDEF vec4 operator-(vec4 v);
 #endif
 
 #ifdef WEM_IMPLEMENTATION
+
+#include "macros.h"
+#include "mathf.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
@@ -316,6 +324,83 @@ vec4 wem_vec4_crossN(vec4 v1, vec4 v2) {
 
 vec4 wem_vec4_lerp(vec4 v1, vec4 v2, float t) {
     vec4 out = wem_vec4_add(wem_vec4_scale(v1, 1.0f - t), wem_vec4_scale(v2, t));
+    return out;
+}
+vec4 wem_vec4_smoothstep(vec4 v1, vec4 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smoothstep(v1.x, v2.x, t);
+    float y = wem_smoothstep(v1.y, v2.y, t);
+    float z = wem_smoothstep(v1.z, v2.z, t);
+    float w = wem_smoothstep(v1.w, v2.w, t);
+    return (vec4){x, y, z, w};
+}
+vec4 wem_vec4_smootherstep(vec4 v1, vec4 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smootherstep(v1.x, v2.x, t);
+    float y = wem_smootherstep(v1.y, v2.y, t);
+    float z = wem_smootherstep(v1.z, v2.z, t);
+    float w = wem_smootherstep(v1.w, v2.w, t);
+    return (vec4){x, y, z, w};
+}
+vec4 wem_vec4_smoothstep_inverse(vec4 v1, vec4 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smoothstep_Inverse(v1.x, v2.x, t);
+    float y = wem_smoothstep_Inverse(v1.y, v2.y, t);
+    float z = wem_smoothstep_Inverse(v1.z, v2.z, t);
+    float w = wem_smoothstep_Inverse(v1.w, v2.w, t);
+    return (vec4){x, y, z, w};
+}
+vec4 wem_vec4_smoothDamp(vec4 from, vec4 to, vec4 *velocity, float maxSpeed, float smoothTime, float timeDelta) {
+    vec4 out = wem_vec4_zero();
+
+    float omega = 2.0f / smoothTime;
+    float x     = omega * timeDelta;
+    float exp   = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+    
+    vec4 change = wem_vec4_sub(from, to);
+    vec4 ogTo   = to;
+
+    float maxChange     = maxSpeed * smoothTime;
+    float maxChangeSqr  = maxChange * maxChange;
+    float sqrMag        = wem_vec4_sqrMagnitude(change);
+    if (sqrMag > maxChangeSqr) {
+        float mag = sqrtf(sqrMag);
+        change.x = change.x / mag * maxChange;
+        change.y = change.y / mag * maxChange;
+        change.z = change.z / mag * maxChange;
+        change.w = change.w / mag * maxChange;
+    }
+
+    to = wem_vec4_sub(from, change);
+
+    vec4 temp = (vec4){
+        (velocity->x + omega * change.x) * timeDelta,
+        (velocity->y + omega * change.y) * timeDelta,
+        (velocity->z + omega * change.z) * timeDelta,
+        (velocity->w + omega * change.w) * timeDelta
+    };
+
+    velocity->x = (velocity->x - omega * temp.x) * exp;
+    velocity->y = (velocity->y - omega * temp.y) * exp;
+    velocity->z = (velocity->z - omega * temp.z) * exp;
+    velocity->w = (velocity->w - omega * temp.w) * exp;
+
+    out.x = to.x + (change.x + temp.x) * exp;
+    out.y = to.y + (change.y + temp.y) * exp;
+    out.z = to.z + (change.z + temp.z) * exp;
+    out.w = to.w + (change.w + temp.w) * exp;
+
+    vec4 ogMinusCurrent = wem_vec4_sub(ogTo, from);
+    vec4 outMinusOg     = wem_vec4_sub(out, ogTo);
+
+    if (wem_vec4_dot(ogMinusCurrent, outMinusOg) > 0) {
+        out = ogTo;
+        velocity->x = (out.x - ogTo.x) / timeDelta;
+        velocity->y = (out.y - ogTo.y) / timeDelta;
+        velocity->z = (out.z - ogTo.z) / timeDelta;
+        velocity->w = (out.w - ogTo.w) / timeDelta;
+    }
+
     return out;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////

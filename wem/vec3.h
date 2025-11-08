@@ -20,19 +20,15 @@
 
 #ifndef WEMDEF
     #ifdef WEM_STATIC
-    #define WEMDEF static
-    #define WEM_IMPLEMENTATION
+        #define WEMDEF static
+        #define WEM_IMPLEMENTATION
     #else
-    #define WEMDEF extern
+        #define WEMDEF extern
     #endif
 #endif
 
 #include "macros.h"
 #include "datatypes.h"
-
-#include <stdlib.h>
-#include <math.h>
-#include <stdio.h>
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
@@ -103,6 +99,10 @@ WEMDEF vec3 wem_vec3_crossN(vec3 v1, vec3 v2);
 //  INTERPOLATION
 
 WEMDEF vec3 wem_vec3_lerp(vec3 v1, vec3 v2, float t);
+WEMDEF vec3 wem_vec3_smoothstep(vec3 v1, vec3 v2, float t);
+WEMDEF vec3 wem_vec3_smootherstep(vec3 v1, vec3 v2, float t);
+WEMDEF vec3 wem_vec3_smoothstep_inverse(vec3 v1, vec3 v2, float t);
+WEMDEF vec3 wem_vec3_smoothDamp(vec3 from, vec3 to, vec3 *velocity, float maxSpeed, float smoothTime, float timeDelta);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ANGLE
 
@@ -143,6 +143,13 @@ WEMDEF vec3 operator-(vec3 v);
 #endif
 
 #ifdef WEM_IMPLEMENTATION
+
+#include "mathf.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
 
@@ -161,7 +168,7 @@ vec3 wem_vec3_zero() {
 
 vec3 *wem_vec3_allocNew(float x, float y, float z) {
     vec3 *out = (vec3*)malloc(sizeof(vec3));
-    out->x = x; out->y = y;
+    out->x = x; out->y = y; out->z = z;
     return out;
 }
 vec3 *wem_vec3_alloc(vec3 vec) {
@@ -256,7 +263,7 @@ float wem_vec3_sqrMagnitude(vec3 v) {
     return POW2(v.x) + POW2(v.y) + POW2(v.z);
 }
 float wem_vec3_magnitude(vec3 v) {
-    return sqrt(wem_vec3_sqrMagnitude(v));
+    return sqrtf(wem_vec3_sqrMagnitude(v));
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  NORMALIZATION
@@ -267,7 +274,7 @@ vec3 wem_vec3_norm(vec3 v) {
     return v;
 }
 vec3 wem_vec3_norm3f(float x, float y, float z) {
-    float l = sqrt(POW2(x) + POW2(y) + POW2(z));
+    float l = sqrtf(POW2(x) + POW2(y) + POW2(z));
     vec3 out = {x / l, y / l, z / l};
     return out;
 }
@@ -300,12 +307,81 @@ vec3 wem_vec3_lerp(vec3 v1, vec3 v2, float t) {
     vec3 out = wem_vec3_add(wem_vec3_scale(v1, 1.0f - t), wem_vec3_scale(v2, t));
     return out;
 }
+vec3 wem_vec3_smoothstep(vec3 v1, vec3 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smoothstep(v1.x, v2.x, t);
+    float y = wem_smoothstep(v1.y, v2.y, t);
+    float z = wem_smoothstep(v1.z, v2.z, t);
+    return (vec3){x, y, z};
+}
+vec3 wem_vec3_smootherstep(vec3 v1, vec3 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smootherstep(v1.x, v2.x, t);
+    float y = wem_smootherstep(v1.y, v2.y, t);
+    float z = wem_smootherstep(v1.z, v2.z, t);
+    return (vec3){x, y, z};
+}
+vec3 wem_vec3_smoothstep_inverse(vec3 v1, vec3 v2, float t) {
+    t = CLAMP(t, 0, 1);
+    float x = wem_smoothstep_Inverse(v1.x, v2.x, t);
+    float y = wem_smoothstep_Inverse(v1.y, v2.y, t);
+    float z = wem_smoothstep_Inverse(v1.z, v2.z, t);
+    return (vec3){x, y, z};
+}
+vec3 wem_vec3_smoothDamp(vec3 from, vec3 to, vec3 *velocity, float maxSpeed, float smoothTime, float timeDelta) {
+    vec3 out = wem_vec3_zero();
+
+    float omega = 2.0f / smoothTime;
+    float x     = omega * timeDelta;
+    float exp   = 1.0f / (1.0f + x + 0.48f * x * x + 0.235f * x * x * x);
+    
+    vec3 change = wem_vec3_sub(from, to);
+    vec3 ogTo   = to;
+
+    float maxChange     = maxSpeed * smoothTime;
+    float maxChangeSqr  = maxChange * maxChange;
+    float sqrMag        = wem_vec3_sqrMagnitude(change);
+    if (sqrMag > maxChangeSqr) {
+        float mag = sqrtf(sqrMag);
+        change.x = change.x / mag * maxChange;
+        change.y = change.y / mag * maxChange;
+        change.z = change.z / mag * maxChange;
+    }
+
+    to = wem_vec3_sub(from, change);
+
+    vec3 temp = (vec3){
+        (velocity->x + omega * change.x) * timeDelta,
+        (velocity->y + omega * change.y) * timeDelta,
+        (velocity->z + omega * change.z) * timeDelta
+    };
+
+    velocity->x = (velocity->x - omega * temp.x) * exp;
+    velocity->y = (velocity->y - omega * temp.y) * exp;
+    velocity->z = (velocity->z - omega * temp.z) * exp;
+
+    out.x = to.x + (change.x + temp.x) * exp;
+    out.y = to.y + (change.y + temp.y) * exp;
+    out.z = to.z + (change.z + temp.z) * exp;
+
+    vec3 ogMinusCurrent = wem_vec3_sub(ogTo, from);
+    vec3 outMinusOg     = wem_vec3_sub(out, ogTo);
+
+    if (wem_vec3_dot(ogMinusCurrent, outMinusOg) > 0) {
+        out = ogTo;
+        velocity->x = (out.x - ogTo.x) / timeDelta;
+        velocity->y = (out.y - ogTo.y) / timeDelta;
+        velocity->z = (out.z - ogTo.z) / timeDelta;
+    }
+
+    return out;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ANGLE
 
 float wem_vec3_angleInRad(vec3 v1, vec3 v2) {
     float dot = wem_vec3_dotN(v1, v2);
-    return acos(dot);
+    return acosf(dot);
 } 
 float wem_vec3_angleInDeg(vec3 v1, vec3 v2) {
     return wem_vec3_angleInRad(v1, v2) * RAD2DEG; 
