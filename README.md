@@ -1,11 +1,13 @@
-**WEM**
+# **WEM**
 
 Basic C/C++ header only math library.
-
-**FEATURES**
+## **FEATURES** <br/>
 
 Vector2, Vector3, Vector4, Matrix4x4, Bezier curves and few macros and RNG functions.
+## **WEM_INTR** <br/>
 
-**WHY**
+Implementation using intrinsic functions.<br/>
+All vectors have 4 elements, making them less memory efficient than WEM vectors<br/>
+and are somewhat less intuative to use, because functions take pointers.
 
-Made this library for learning game development.
+Vector2, Vector3, Vector4
