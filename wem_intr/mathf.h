@@ -24,7 +24,8 @@ WEMDEF float wem_smoothstep(float start, float end, float t);
 WEMDEF float wem_smootherstep(float start, float end, float t);
 WEMDEF float wem_smoothstep_Inverse(float start, float end, float t);
 
-#ifdef WEM_INTR_IMPLEMENTATION
+#ifndef WEM_IMPLEMENTATION
+#ifdef WEM_INTR_IMPLEMENTATION 
 
 #include <math.h>
 
@@ -42,5 +43,6 @@ float wem_smoothstep_Inverse(float start, float end, float t) {
     return (0.5f - sinf(asinf(1.0f - 2.0f * t) / 3.0f)) * (end - start) + start;
 }
 
+#endif
 #endif
 #endif

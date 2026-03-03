@@ -12,6 +12,10 @@
 #define DEG2RAD             (PI / 180.0f)
 
 #define CLAMP(X, Min, Max)      (X < Min ? Min : X > Max ? Max : X)
+
+#define CLAMP01(X)              (X < 0 ? 0 : X > 1 ? 1 : X)
+#define CLAMP01_NF(X)           (X * (X < 0) * (X > 1) + (X > 1))
+
 #define INRANGE(X, Min, Max)    (X < Min ? 0 : X > Max ? 0 : 1)
 
 #define WEM_AS(X, AS)       (*(AS*)((float*)&X))
