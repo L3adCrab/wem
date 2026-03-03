@@ -5,8 +5,8 @@
 
 #define WEMDEF extern
 
+WEMDEF void wem_Vec_set(Vec out, float x, float y, float z, float w);
 WEMDEF void wem_Vec_cpy(Vec out, const Vec v);
-
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC
 
@@ -28,6 +28,10 @@ WEMDEF void wem_Vec_add1f(Vec out, const Vec v, float val);
 WEMDEF void wem_Vec_sub1f(Vec out, const Vec v, float val);
 WEMDEF void wem_Vec_mul1f(Vec out, const Vec v, float val);
 WEMDEF void wem_Vec_div1f(Vec out, const Vec v, float val);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  VEC * MAT4
+
+WEMDEF void wem_Vec_mulMat4(Vec out, const Vec v, const Mat4 m);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  MAGNITUDE
 
@@ -85,14 +89,15 @@ WEMDEF void wem_Vec_print(const Vec v);
 #include <memory.h>
 #include <math.h>
 #include <immintrin.h>
-#include <pmmintrin.h>
 
 #include "macros.h"
 
-void wem_Vec_cpy(Vec out, const Vec v) {
-    memcpy(out, v, 16);
+void wem_Vec_set(Vec out, float x, float y, float z, float w) {
+    out[0] = x; out[1] = y, out[2] = z, out[3] = w;
 }
-
+void wem_Vec_cpy(Vec out, const Vec v) {
+    memcpy(out, v, sizeof(Vec));
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -132,28 +137,28 @@ void wem_Vec_div(Vec out, const Vec v1, const Vec v2) {
 void wem_Vec_add4f(Vec out, const Vec v, float x, float y, float z, float w) {
     __m128 a, b, acc;
     a = _mm_load_ps(v);
-    b = _mm_set_ps(x, y, z, w);
+    b = _mm_set_ps(w, z, y, x);
     acc = _mm_add_ps(a, b);     //  v + (x y z w)
     _mm_store_ps(out, acc);
 }
 void wem_Vec_sub4f(Vec out, const Vec v, float x, float y, float z, float w) {
     __m128 a, b, acc;
     a = _mm_load_ps(v);
-    b = _mm_set_ps(x, y, z, w);
+    b = _mm_set_ps(w, z, y, x);
     acc = _mm_sub_ps(a, b);     //  v - (x y z w)
     _mm_store_ps(out, acc);
 }
 void wem_Vec_mul4f(Vec out, const Vec v, float x, float y, float z, float w) {
     __m128 a, b, acc;
     a = _mm_load_ps(v);
-    b = _mm_set_ps(x, y, z, w);
+    b = _mm_set_ps(w, z, y, x);
     acc = _mm_mul_ps(a, b);     //  v * (x y z w)
     _mm_store_ps(out, acc);
 }
 void wem_Vec_div4f(Vec out, const Vec v, float x, float y, float z, float w) {
     __m128 a, b, acc;
     a = _mm_load_ps(v);
-    b = _mm_set_ps(x, y, z, w);
+    b = _mm_set_ps(w, z, y, x);
     acc = _mm_div_ps(a, b);     //  v / (x y z w)
     _mm_store_ps(out, acc);
 }
@@ -187,6 +192,36 @@ void wem_Vec_div1f(Vec out, const Vec v, float val) {
     a = _mm_load_ps(v);
     b = _mm_set1_ps(val);
     acc = _mm_div_ps(a, b);     //  v / f
+    _mm_store_ps(out, acc);
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  VEC * MAT4
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void wem_Vec_mulMat4(Vec out, const Vec v, const Mat4 m) {
+    __m128 x, y, z, w, acc;
+    __m128 row1, row2, row3, row4;
+
+    x = _mm_set_ps1(v[0]);
+    y = _mm_set_ps1(v[1]);
+    z = _mm_set_ps1(v[2]);
+    w = _mm_set_ps1(v[3]);
+
+    row1 = _mm_load_ps(m);
+    row2 = _mm_load_ps(m + 4);
+    row3 = _mm_load_ps(m + 8);
+    row4 = _mm_load_ps(m + 12);
+    
+    acc = _mm_add_ps(
+        _mm_add_ps(
+            _mm_mul_ps(x, row1),
+            _mm_mul_ps(y, row2)
+        ),
+        _mm_add_ps(
+            _mm_mul_ps(z, row3),
+            _mm_mul_ps(w, row4)
+        )
+    );
     _mm_store_ps(out, acc);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -227,7 +262,18 @@ void wem_Vec_clampMagnitude(Vec out, const Vec v, float maxMagnitude) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void wem_Vec_norm(Vec out, const Vec v) {
-    wem_Vec_div1f(out, v, wem_Vec_magnitude(v));
+    __m128 a, b, acc;
+
+    a = _mm_load_ps(v);
+    acc = _mm_mul_ps(a, a);
+    acc = _mm_hadd_ps(acc, acc);
+    acc = _mm_hadd_ps(acc, acc);
+    float mag = sqrtf(acc[0]);
+    // float mag = sqrtf(acc[0] + acc[1] + acc[2] + acc[3]);
+    
+    b = _mm_set1_ps(mag);
+    acc = _mm_div_ps(a, b);     //  v / f
+    _mm_store_ps(out, acc);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  POW2
@@ -241,14 +287,38 @@ void wem_Vec_pow2(Vec out, const Vec v) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 float wem_Vec_dot(const Vec v1, const Vec v2) {
-    Vec out;
-    wem_Vec_mul(out, v1, v2);
-    return out[0] + out[1] + out[2];
+    __m128 a, b, acc;
+    a = _mm_load_ps(v1);
+    b = _mm_load_ps(v2);
+    acc = _mm_mul_ps(a, b);     //  v * v
+
+    acc = _mm_hadd_ps(acc, acc);
+    acc = _mm_hadd_ps(acc, acc);
+    return acc[0];
 }
 float wem_Vec_dotN(const Vec v1, const Vec v2) {
-    Vec v1N, v2N;
-    wem_Vec_norm(v1N, v1); wem_Vec_norm(v2N, v2);
-    return wem_Vec_dot(v1N, v2N);
+    __m128 v1N, v2N, acc;
+    float mag;
+
+    v1N = _mm_load_ps(v1);
+    acc = _mm_mul_ps(v1N, v1N);
+    acc = _mm_hadd_ps(acc, acc);
+    acc = _mm_hadd_ps(acc, acc);
+    mag = sqrtf(acc[0]);
+    v1N = _mm_div_ps(v1N, _mm_set1_ps(mag));     //  v / f
+
+    v2N = _mm_load_ps(v2);
+    acc = _mm_mul_ps(v2N, v2N);
+    acc = _mm_hadd_ps(acc, acc);
+    acc = _mm_hadd_ps(acc, acc);
+    mag = sqrtf(acc[0]);
+    v2N = _mm_div_ps(v2N, _mm_set1_ps(mag));     //  v / f
+
+    acc = _mm_mul_ps(v1N, v2N);     //  v * v
+
+    acc = _mm_hadd_ps(acc, acc);
+    acc = _mm_hadd_ps(acc, acc);
+    return acc[0];
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  INVERSE
@@ -262,10 +332,22 @@ void wem_Vec_inv(Vec out, const Vec v) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void wem_Vec_cross(Vec out, const Vec v1, const Vec v2) {
-    out[0] = v1[1] * v2[2] - v1[2] * v2[1];
-    out[1] = v1[2] * v2[0] - v1[0] * v2[2];
-    out[2] = v1[0] * v2[1] - v1[1] * v2[0];
-    out[3] = 1;   
+    __m128 a, b, acc;
+    a = _mm_load_ps(v1);
+    b = _mm_load_ps(v2);
+
+    __m128 ah1 = _mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 0, 2, 1));
+    __m128 ah2 = _mm_shuffle_ps(a, a, _MM_SHUFFLE(3, 1, 0, 2));
+
+    __m128 bh1 = _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 1, 0, 2));
+    __m128 bh2 = _mm_shuffle_ps(b, b, _MM_SHUFFLE(3, 0, 2, 1));
+
+    __m128 h1 = _mm_mul_ps(ah1, bh1);
+    __m128 h2 = _mm_mul_ps(ah2, bh2);
+
+    acc = _mm_sub_ps(h1, h2);
+    _mm_store_ps(out, acc);
+    out[3] = 1;  
 }
 void wem_Vec_crossN(Vec out, Vec v1, Vec v2) {
     Vec cross;

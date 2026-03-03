@@ -5,283 +5,250 @@
 
 #define WEMDEF extern
 
+WEMDEF void wem_Vec2_set(Vec2 out, float x, float y);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC
 
-WEMDEF Vector2 wem_Vector2_add(const Vector2 *v1, const Vector2 *v2);
-WEMDEF Vector2 wem_Vector2_sub(const Vector2 *v1, const Vector2 *v2);
-WEMDEF Vector2 wem_Vector2_mul(const Vector2 *v1, const Vector2 *v2);
-WEMDEF Vector2 wem_Vector2_div(const Vector2 *v1, const Vector2 *v2);
+WEMDEF void wem_Vec2_add(Vec2 out, const Vec2 v1, const Vec2 v2);
+WEMDEF void wem_Vec2_sub(Vec2 out, const Vec2 v1, const Vec2 v2);
+WEMDEF void wem_Vec2_mul(Vec2 out, const Vec2 v1, const Vec2 v2);
+WEMDEF void wem_Vec2_div(Vec2 out, const Vec2 v1, const Vec2 v2);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ XYZW
 
-WEMDEF Vector2 wem_Vector2_add4f(const Vector2 *v, float x, float y);
-WEMDEF Vector2 wem_Vector2_sub4f(const Vector2 *v, float x, float y);
-WEMDEF Vector2 wem_Vector2_mul4f(const Vector2 *v, float x, float y);
-WEMDEF Vector2 wem_Vector2_div4f(const Vector2 *v, float x, float y);
+WEMDEF void wem_Vec2_add2f(Vec2 out, const Vec2 v, float x, float y);
+WEMDEF void wem_Vec2_sub2f(Vec2 out, const Vec2 v, float x, float y);
+WEMDEF void wem_Vec2_mul2f(Vec2 out, const Vec2 v, float x, float y);
+WEMDEF void wem_Vec2_div2f(Vec2 out, const Vec2 v, float x, float y);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ FFFF
 
-WEMDEF Vector2 wem_Vector2_add1f(const Vector2 *v, float val);
-WEMDEF Vector2 wem_Vector2_sub1f(const Vector2 *v, float val);
-WEMDEF Vector2 wem_Vector2_mul1f(const Vector2 *v, float val);
-WEMDEF Vector2 wem_Vector2_div1f(const Vector2 *v, float val);
+WEMDEF void wem_Vec2_add1f(Vec2 out, const Vec2 v, float val);
+WEMDEF void wem_Vec2_sub1f(Vec2 out, const Vec2 v, float val);
+WEMDEF void wem_Vec2_mul1f(Vec2 out, const Vec2 v, float val);
+WEMDEF void wem_Vec2_div1f(Vec2 out, const Vec2 v, float val);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  MAGNITUDE
 
-WEMDEF float wem_Vector2_sqrMagnitude(const Vector2 *v);
-WEMDEF float wem_Vector2_magnitude(const Vector2 *v);
-WEMDEF Vector2 wem_Vector2_clampMagnitude(const Vector2 *v, float maxMagnitude);
+WEMDEF float wem_Vec2_sqrMagnitude(const Vec2 v);
+WEMDEF float wem_Vec2_magnitude(const Vec2 v);
+WEMDEF void wem_Vec2_clampMagnitude(Vec2 out, const Vec2 v, float maxMagnitude);
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  NORMALIZATION
 
-WEMDEF Vector2 wem_Vector2_norm(const Vector2 *v);
+WEMDEF void wem_Vec2_norm(Vec2 out, const Vec2 v);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  POW2
 
-WEMDEF Vector2 wem_Vector2_pow2(const Vector2 *v);
+WEMDEF void wem_Vec2_pow2(Vec2 out, const Vec2 v);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  DOT
 
-WEMDEF float wem_Vector2_dot(const Vector2 *v1, const Vector2 *v2);
-WEMDEF float wem_Vector2_dotN(const Vector2 *v1, const Vector2 *v2);
+WEMDEF float wem_Vec2_dot(const Vec2 v1, const Vec2 v2);
+WEMDEF float wem_Vec2_dotN(const Vec2 v1, const Vec2 v2);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  INVERSE
 
-WEMDEF Vector2 wem_Vector2_inv(const Vector2 *v);
+WEMDEF void wem_Vec2_inv(Vec2 out, const Vec2 v);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-//  CROSS
+//  PERPENDICULAR
 
-WEMDEF Vector2 wem_Vector2_cross(const Vector2 *v1, const Vector2 *v2);
-WEMDEF Vector2 wem_Vector2_crossN(const Vector2 *v1, const Vector2 *v2);
+WEMDEF void wem_Vec2_perp(Vec2 out, const Vec2 v);
+WEMDEF void wem_Vec2_perpN(Vec2 out, const Vec2 v);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  INTERPOLATION
 
-Vector2 wem_Vector2_lerp(const Vector2 *from, const Vector2 *to, float t);
-Vector2 wem_Vector2_smoothstep(const Vector2 *from, const Vector2 *to, float t);
-Vector2 wem_Vector2_smootherstep(const Vector2 *from, const Vector2 *to, float t);
-Vector2 wem_Vector2_smoothstep_inverse(const Vector2 *from, const Vector2 *to, float t);
-Vector2 wem_Vector2_smoothDamp(const Vector2 *from, const Vector2 *to, Vector2 *velocity, float maxSpeed, float smoothTime, float timeDelta);
+WEMDEF void wem_Vec2_lerp(Vec2 out, const Vec2 from, const Vec2 to, float t);
+WEMDEF void wem_Vec2_smoothstep(Vec2 out, const Vec2 from, const Vec2 to, float t);
+WEMDEF void wem_Vec2_smootherstep(Vec2 out, const Vec2 from, const Vec2 to, float t);
+WEMDEF void wem_Vec2_smoothstep_inverse(Vec2 out, const Vec2 from, const Vec2 to, float t);
+WEMDEF void wem_Vec2_smoothDamp(Vec2 out, const Vec2 from, const Vec2 to, Vec2 velocity, float maxSpeed, float smoothTime, float timeDelta);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ANGLE
 
-WEMDEF float wem_Vector2_angleInRad(const Vector2 *v1, const Vector2 *v2);
-WEMDEF float wem_Vector2_angleInDeg(const Vector2 *v1, const Vector2 *v2);
+WEMDEF float wem_Vec2_angleInRad(const Vec2 v1, const Vec2 v2);
+WEMDEF float wem_Vec2_angleInDeg(const Vec2 v1, const Vec2 v2);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  UTIL
 
-WEMDEF bool wem_Vector2_matches(const Vector2 *v1, const Vector2 *v2);
-WEMDEF bool wem_Vector2_inRange(const Vector2 *v1, const Vector2 *v2, float range);
+WEMDEF bool wem_Vec2_matches(const Vec2 v1, const Vec2 v2);
+WEMDEF bool wem_Vec2_inRange(const Vec2 v1, const Vec2 v2, float range);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  DEBUG
 
-WEMDEF void wem_Vector2_print(const Vector2 v);
+WEMDEF void wem_Vec2_print(const Vec2 v);
 
 #ifdef WEM_INTR_IMPLEMENTATION
 
-#include <stdio.h>
 #include <math.h>
 #include <immintrin.h>
 
 #include "Vector.h"
 
+void wem_Vec2_set(Vec2 out, float x, float y) {
+    out[0] = x; out[1] = y, out[2] = 0, out[3] = 0;
+}
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Vector2 wem_Vector2_add(const Vector2 *v1, const Vector2 *v2) {
-    Vector2 out = {{0}};
-    wem_Vec_add(out.p, v1->p, v2->p);
-    return out;
+void wem_Vec2_add(Vec2 out, const Vec2 v1, const Vec2 v2) {
+    wem_Vec_add(out, v1, v2);
 }
-Vector2 wem_Vector2_sub(const Vector2 *v1, const Vector2 *v2) {
-    Vector2 out = {{0}};
-    wem_Vec_sub(out.p, v1->p, v2->p);
-    return out;
+void wem_Vec2_sub(Vec2 out, const Vec2 v1, const Vec2 v2) {
+    wem_Vec_sub(out, v1, v2);
 }
-Vector2 wem_Vector2_mul(const Vector2 *v1, const Vector2 *v2) {
-    Vector2 out = {{0}};
-    wem_Vec_mul(out.p, v1->p, v2->p);
-    return out;
+void wem_Vec2_mul(Vec2 out, const Vec2 v1, const Vec2 v2) {
+    wem_Vec_mul(out, v1, v2);
 }
-Vector2 wem_Vector2_div(const Vector2 *v1, const Vector2 *v2) {
-    Vector2 out = {{0}};
-    wem_Vec_div(out.p, v1->p, v2->p);
-    return out;
+void wem_Vec2_div(Vec2 out, const Vec2 v1, const Vec2 v2) {
+    wem_Vec_div(out, v1, v2);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ XYZW
 
-Vector2 wem_Vector2_add4f(const Vector2 *v, float x, float y) {
-    Vector2 out = {{0}};
-    wem_Vec_add4f(out.p, v->p, x, y, 0, 0);
-    return out;
+void wem_Vec2_add2f(Vec2 out, const Vec2 v, float x, float y) {
+    wem_Vec_add4f(out, v, x, y, 0, 0);
 }
-Vector2 wem_Vector2_sub4f(const Vector2 *v, float x, float y) {
-    Vector2 out = {{0}};
-    wem_Vec_sub4f(out.p, v->p, x, y, 0, 0);
-    return out;
+void wem_Vec2_sub2f(Vec2 out, const Vec2 v, float x, float y) {
+    wem_Vec_sub4f(out, v, x, y, 0, 0);
 }
-Vector2 wem_Vector2_mul4f(const Vector2 *v, float x, float y) {
-    Vector2 out = {{0}};
-    wem_Vec_mul4f(out.p, v->p, x, y, 0, 0);
-    return out;
+void wem_Vec2_mul2f(Vec2 out, const Vec2 v, float x, float y) {
+    wem_Vec_mul4f(out, v, x, y, 0, 0);
 }
-Vector2 wem_Vector2_div4f(const Vector2 *v, float x, float y) {
-    Vector2 out = {{0}};
-    wem_Vec_div4f(out.p, v->p, x, y, 0, 0);
-    return out;
+void wem_Vec2_div2f(Vec2 out, const Vec2 v, float x, float y) {
+    wem_Vec_div4f(out, v, x, y, 1, 1);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ FFFF
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Vector2 wem_Vector2_add1f(const Vector2 *v, float val) {
-    Vector2 out = {{0}};
-    wem_Vec_add1f(out.p, v->p, val);
-    return out;
+void wem_Vec2_add1f(Vec2 out, const Vec2 v, float val) {
+    wem_Vec_add1f(out, v, val);
 }
-Vector2 wem_Vector2_sub1f(const Vector2 *v, float val) {
-    Vector2 out = {{0}};
-    wem_Vec_sub1f(out.p, v->p, val);
-    return out;
+void wem_Vec2_sub1f(Vec2 out, const Vec2 v, float val) {
+    wem_Vec_sub1f(out, v, val);
 }
-Vector2 wem_Vector2_mul1f(const Vector2 *v, float val) {
-    Vector2 out = {{0}};
-    wem_Vec_mul1f(out.p, v->p, val);
-    return out;
+void wem_Vec2_mul1f(Vec2 out, const Vec2 v, float val) {
+    wem_Vec_mul1f(out, v, val);
 }
-Vector2 wem_Vector2_div1f(const Vector2 *v, float val) {
-    Vector2 out = {{0}};
-    wem_Vec_div1f(out.p, v->p, val);
-    return out;
+void wem_Vec2_div1f(Vec2 out, const Vec2 v, float val) {
+    wem_Vec_div1f(out, v, val);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  MAGNITUDE
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-float wem_Vector2_sqrMagnitude(const Vector2 *v) {
-    return POW2(v->p[0]) + POW2(v->p[1]);
+float wem_Vec2_sqrMagnitude(const Vec2 v) {
+    return POW2(v[0]) + POW2(v[1]);
 }
-float wem_Vector2_magnitude(const Vector2 *v) {
-    __m128 a, acc;
-    a = _mm_load_ps(v->p);
-    acc = _mm_mul_ps(a, a);
-    return sqrtf(acc[0] + acc[1]);
+float wem_Vec2_magnitude(const Vec2 v) {
+    return sqrtf(POW2(v[0]) + POW2(v[1]));
 }
-Vector2 wem_Vector2_clampMagnitude(const Vector2 *v, float maxMagnitude) {
-    Vector2 out = {{0}};
-    wem_Vec_clampMagnitude(out.p, v->p, maxMagnitude);
-    return out;
+void wem_Vec2_clampMagnitude(Vec2 out, const Vec2 v, float maxMagnitude) {
+    float mag = sqrtf(POW2(v[0]) + POW2(v[1]));
+    __m128 a, d, m, acc;
+    a = _mm_load_ps(v);
+    d = _mm_set_ps1(mag > maxMagnitude ? mag : 1);
+    m = _mm_set_ps1(mag > maxMagnitude ? maxMagnitude : 1);
+    acc = _mm_div_ps(a, d);
+    acc = _mm_mul_ps(acc, m);
+    _mm_store_ps(out, acc); 
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //  NORMALIZATION
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Vector2 wem_Vector2_norm(const Vector2 *v) {
-    Vector2 out = {{0}};
-    wem_Vec_div1f(out.p, v->p, wem_Vector2_magnitude(v));
-    return out;
+void wem_Vec2_norm(Vec2 out, const Vec2 v) {
+    float mag = sqrtf(POW2(v[0]) + POW2(v[1]));
+    __m128 acc = _mm_div_ps(_mm_load_ps(v), _mm_set_ps1(mag));
+    _mm_store_ps(out, acc);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  POW2
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Vector2 wem_Vector2_pow2(const Vector2 *v) {
-    Vector2 out = {{0}};
-    wem_Vec_mul(out.p, v->p, v->p);
-    return out;
+void wem_Vec2_pow2(Vec2 out, const Vec2 v) {
+    wem_Vec_mul(out, v, v);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  DOT
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-float wem_Vector2_dot(const Vector2 *v1, const Vector2 *v2) {
+float wem_Vec2_dot(const Vec2 v1, const Vec2 v2) {
     Vec out;
-    wem_Vec_mul(out, v1->p, v2->p);
+    wem_Vec_mul(out, v1, v2);
     return out[0] + out[1];
 }
-float wem_Vector2_dotN(const Vector2 *v1, const Vector2 *v2) {
-    Vector2 v1N, v2N;
-    v1N = wem_Vector2_norm(v1); v2N = wem_Vector2_norm(v2);
-    return wem_Vector2_dot(&v1N, &v2N);
+float wem_Vec2_dotN(const Vec2 v1, const Vec2 v2) {
+    Vec2 v1N, v2N;
+    wem_Vec2_norm(v1N, v1); wem_Vec2_norm(v2N, v2);
+    return wem_Vec2_dot(v1N, v2N);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  INVERSE
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Vector2 wem_Vector2_inv(const Vector2 *v) {
-    Vector2 out = {{0}};
-    wem_Vec_inv(out.p, v->p);
-    return out;
+void wem_Vec2_inv(Vec2 out, const Vec2 v) {
+    wem_Vec_inv(out, v);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
-//  CROSS
+//  PERPENDICULAR
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Vector2 wem_Vector2_cross(const Vector2 *v1, const Vector2 *v2) {
-    return (Vector2){{v1->p[1] - v2->p[1], v1->p[0] - v2->p[0]}};
+void wem_Vec2_perp(Vec2 out, const Vec2 v) {
+    out[0] = v[1]; out[1] = v[0];
 }
-Vector2 wem_Vector2_crossN(const Vector2 *v1, const Vector2 *v2) {
-    Vector2 out = wem_Vector2_cross(v1, v2);
-    return wem_Vector2_norm(&out);
+void wem_Vec2_perpN(Vec2 out, const Vec2 v) {
+    out[0] = v[1]; out[1] = v[0];
+    wem_Vec2_norm(out, out);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  INTERPOLATION
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-Vector2 wem_Vector2_lerp(const Vector2 *from, const Vector2 *to, float t) {
-    Vector2 out = {{0}};
-    wem_Vec_lerp(out.p, from->p, to->p, t);
-    return out;
+void wem_Vec2_lerp(Vec2 out, const Vec2 from, const Vec2 to, float t) {
+    wem_Vec_lerp(out, from, to, t);
 }
-Vector2 wem_Vector2_smoothstep(const Vector2 *from, const Vector2 *to, float t) {
-    Vector2 out = {{0}};
-    wem_Vec_smoothstep(out.p, from->p, to->p, t);
-    return out;
+void wem_Vec2_smoothstep(Vec2 out, const Vec2 from, const Vec2 to, float t) {
+    wem_Vec_smoothstep(out, from, to, t);
 }
-Vector2 wem_Vector2_smootherstep(const Vector2 *from, const Vector2 *to, float t) {
-    Vector2 out = {{0}};
-    wem_Vec_smootherstep(out.p, from->p, to->p, t);
-    return out;
+void wem_Vec2_smootherstep(Vec2 out, const Vec2 from, const Vec2 to, float t) {
+    wem_Vec_smootherstep(out, from, to, t);
 }
-Vector2 wem_Vector2_smoothstep_inverse(const Vector2 *from, const Vector2 *to, float t) {
-    Vector2 out = {{0}};
-    wem_Vec_smoothstep_inverse(out.p, from->p, to->p, t);
-    return out;
+void wem_Vec2_smoothstep_inverse(Vec2 out, const Vec2 from, const Vec2 to, float t) {
+    wem_Vec_smoothstep_inverse(out, from, to, t);
 }
-Vector2 wem_Vector2_smoothDamp(const Vector2 *from, const Vector2 *to, Vector2 *velocity, float maxSpeed, float smoothTime, float timeDelta) {
-    Vector2 out = {{0}};
-    wem_Vec_smoothDamp(out.p, from->p, to->p, velocity->p, maxSpeed, smoothTime, timeDelta);
-    return out;
+void wem_Vec2_smoothDamp(Vec2 out, const Vec2 from, const Vec2 to, Vec2 velocity, float maxSpeed, float smoothTime, float timeDelta) {
+    wem_Vec_smoothDamp(out, from, to, velocity, maxSpeed, smoothTime, timeDelta);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ANGLE
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-float wem_Vector2_angleInRad(const Vector2 *v1, const Vector2 *v2) {
-    float dot = wem_Vector2_dotN(v1, v2);
+float wem_Vec2_angleInRad(const Vec2 v1, const Vec2 v2) {
+    float dot = wem_Vec2_dotN(v1, v2);
     return acosf(dot);
 }
-float wem_Vector2_angleInDeg(const Vector2 *v1, const Vector2 *v2) {
-    return wem_Vector2_angleInRad(v1, v2) * RAD2DEG; 
+float wem_Vec2_angleInDeg(const Vec2 v1, const Vec2 v2) {
+    return wem_Vec2_angleInRad(v1, v2) * RAD2DEG; 
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  UTIL
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-bool wem_Vector2_matches(const Vector2 *v1, const Vector2 *v2) {
-    return wem_Vec_matches(v1->p, v2->p);
+bool wem_Vec2_matches(const Vec2 v1, const Vec2 v2) {
+    return wem_Vec_matches(v1, v2);
 }
-bool wem_Vector2_inRange(const Vector2 *v1, const Vector2 *v2, float range) {
-    return wem_Vec_inRange(v1->p, v2->p, range);
+bool wem_Vec2_inRange(const Vec2 v1, const Vec2 v2, float range) {
+    return wem_Vec_inRange(v1, v2, range);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  DEBUG
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void wem_Vector2_print(const Vector2 v) {
-    printf("(%f %f)", v.p[0], v.p[1]);
+void wem_Vec2_print(const Vec2 v) {
+    printf("(%f %f %f %f)", v[0], v[1], v[2], v[3]);
 }
 
 #endif
