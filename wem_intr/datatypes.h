@@ -4,18 +4,34 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef float Vec[4];
+typedef float __attribute__((aligned(16))) Vec[4];
 
-typedef struct Vec2 { float x, y; }         __attribute__((aligned(16))) Vec2;
-typedef struct Vec3 { float x, y, z; }      __attribute__((aligned(16))) Vec3;
-typedef struct Vec4 { float x, y, z, w; }   __attribute__((aligned(16))) Vec4;
+//  X Y z w
+typedef Vec Vec2;
+//  X Y Z w
+typedef Vec Vec3;
+//  X Y Z W
+typedef Vec Vec4;
 
-typedef union Vector2 { Vec p; Vec2 v; }    Vector2;
-typedef union Vector3 { Vec p; Vec3 v; }    Vector3;
-typedef union Vector4 { Vec p; Vec4 v; }    Vector4;
+#define VEC2(X, Y)          (Vec2){X, Y, 0, 0}
+#define VEC3(X, Y, Z)       (Vec3){X, Y, Z, 0}
+#define VEC4(X, Y, Z, W)    (Vec4){X, Y, Z, W}
 
-#define VECTOR2(X, Y)           (Vector2){{X, Y}}
-#define VECTOR3(X, Y, Z)        (Vector3){{X, Y, Z}}
-#define VECTOR4(X, Y, Z, W)     (Vector4){{X, Y, Z, W}}
+/*
+m0_ m4_ m8_ m12
+m1_ m5_ m9_ m13
+m2_ m6_ m10 m14
+m3_ m7_ m11 m15
+*/
+typedef float 
+#ifdef __AVX__
+__attribute__((aligned(32))) Mat4[16];
+#elif __SSE__
+__attribute__((aligned(16))) Mat4[16];
+#endif
+
+typedef float __attribute__((aligned(16))) BezierLinear[8];
+typedef float __attribute__((aligned(16))) BezierQuad[12];
+typedef float __attribute__((aligned(16))) BezierCubic[16];
 
 #endif
