@@ -83,7 +83,7 @@ WEMDEF void wem_Vec3_print(const Vec3 v);
 #include <math.h>
 #include <immintrin.h>
 
-#include "Vector.h"
+#include "vector.h"
 
 void wem_Vec3_set(Vec3 out, float x, float y, float z) {
     out[0] = x; out[1] = y, out[2] = z, out[3] = 0;

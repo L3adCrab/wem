@@ -83,7 +83,7 @@ WEMDEF void wem_Vec2_print(const Vec2 v);
 #include <math.h>
 #include <immintrin.h>
 
-#include "Vector.h"
+#include "vector.h"
 
 void wem_Vec2_set(Vec2 out, float x, float y) {
     out[0] = x; out[1] = y, out[2] = 0, out[3] = 0;

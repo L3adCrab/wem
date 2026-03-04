@@ -87,7 +87,7 @@ WEMDEF void wem_Vec4_print(const Vec4 v);
 #include <math.h>
 #include <immintrin.h>
 
-#include "Vector.h"
+#include "vector.h"
 
 void wem_Vec4_set(Vec4 out, float x, float y, float z, float w) {
     out[0] = x; out[1] = y, out[2] = z, out[3] = w;
