@@ -55,8 +55,8 @@ void wem_BezierLinear_set(BezierLinear out, const Vec4 beg, const Vec4 end) {
     memcpy(out + 4, end, sizeof(Vec4));
 }
 void wem_BezierLinear_get(Vec4 outBeg, Vec4 outEnd, const BezierLinear bezier) {
-    memcpy(outBeg, bezier + 0, sizeof(Vec4));
-    memcpy(outEnd, bezier + 4, sizeof(Vec4));
+    if (outBeg) memcpy(outBeg, bezier + 0, sizeof(Vec4));
+    if (outEnd) memcpy(outEnd, bezier + 4, sizeof(Vec4));
 }
 void wem_BezierLinear_evaluate(Vec4 out, const BezierLinear bezier, float t) {
     t = CLAMP(t, 0, 1);
@@ -82,9 +82,9 @@ void wem_BezierQuad_set(BezierQuad out, const Vec4 beg, const Vec4 handle, const
     memcpy(out + 8, end, sizeof(Vec4));
 }
 void wem_BezierQuad_get(Vec4 outBeg, Vec4 outHandle, Vec4 outEnd, const BezierQuad bezier) {
-    memcpy(outBeg,      bezier + 0, sizeof(Vec4));
-    memcpy(outHandle,   bezier + 4, sizeof(Vec4));
-    memcpy(outEnd,      bezier + 8, sizeof(Vec4));
+    if (outBeg)     memcpy(outBeg,      bezier + 0, sizeof(Vec4));
+    if (outHandle)  memcpy(outHandle,   bezier + 4, sizeof(Vec4));
+    if (outEnd)     memcpy(outEnd,      bezier + 8, sizeof(Vec4));
 }
 void wem_BezierQuad_evaluate(Vec4 out, const BezierQuad bezier, float t) {
     t = CLAMP(t, 0, 1);
@@ -129,10 +129,10 @@ void wem_BezierCubic_set(BezierCubic out, const Vec4 beg, const Vec4 handle1, co
     memcpy(out + 12, end,    sizeof(vec4));
 }
 void wem_BezierCubic_get(Vec4 outBeg, Vec4 outHandle1, Vec4 outHandle2, Vec4 outEnd, const BezierCubic bezier) {
-    memcpy(outBeg,      bezier + 0, sizeof(Vec4));
-    memcpy(outHandle1,  bezier + 4, sizeof(Vec4));
-    memcpy(outHandle2,  bezier + 8, sizeof(Vec4));
-    memcpy(outEnd,      bezier + 12, sizeof(Vec4));
+    if (outBeg)     memcpy(outBeg,      bezier + 0, sizeof(Vec4));
+    if (outHandle1) memcpy(outHandle1,  bezier + 4, sizeof(Vec4));
+    if (outHandle2) memcpy(outHandle2,  bezier + 8, sizeof(Vec4));
+    if (outEnd)     memcpy(outEnd,      bezier + 12, sizeof(Vec4));
 }
 void wem_BezierCubic_evaluate(Vec4 out, const BezierCubic bezier, float t) {
     t = CLAMP(t, 0, 1);
