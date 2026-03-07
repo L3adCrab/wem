@@ -42,10 +42,21 @@ WEMDEF void wem_Mat4_translate(Mat4 out, const Mat4 m, const Vec3 position);
 WEMDEF void wem_Mat4_scalar(Mat4 out, const Vec3 scale);
 WEMDEF void wem_Mat4_setScale(Mat4 out, const Mat4 m, const Vec3 scale);
 WEMDEF void wem_Mat4_scale(Mat4 out, const Mat4 m, const Vec3 scale);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  VIEW
+
+WEMDEF void wem_Mat4_lookAt(Mat4 out, const Vec3 position, const Vec3 target, const Vec3 camUp);
+WEMDEF void wem_Mat4_view(Mat4 out, const Vec3 position, const Vec3 forward, const Vec3 camUp);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  PROJECTION
+
+WEMDEF void wem_Mat4_ortho(Mat4 out, float zoom, float aspectRatio, float near, float far);
+WEMDEF void wem_Mat4_perspective(Mat4 out, float fovDeg, float aspectRatio, float near, float far);
 
 #ifdef WEM_INTR_IMPLEMENTATION
 
 #include <immintrin.h>
+#include "vector3.h"
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  ALLOCATION
@@ -313,6 +324,68 @@ void wem_Mat4_scale(Mat4 out, const Mat4 m, const Vec3 scale) {
     out[0]  *= scale[0];
     out[5]  *= scale[1];
     out[10] *= scale[2];
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  VIEW
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void wem_Mat4_lookAt(Mat4 out, const Vec3 position, const Vec3 target, const Vec3 camUp){
+    Vec3 fwd, right, up;
+    wem_Vec3_sub(fwd, target, position);
+    wem_Vec3_norm(fwd, fwd);
+    wem_Vec3_cross(right, camUp, fwd);
+    wem_Vec3_cross(up, fwd, right);
+    wem_Vec3_inv(fwd, fwd);
+    float tx = wem_Vec3_dot(position, right);
+    float ty = wem_Vec3_dot(position, up);
+    float tz = wem_Vec3_dot(position, fwd);
+    Mat4 outMat = {
+        right[0], up[0], fwd[0], 0,
+        right[1], up[1], fwd[1], 0,
+        right[2], up[2], fwd[2], 0,
+        -tx, -ty, -tz, 1
+    };
+    memcpy(out, outMat, sizeof(Mat4));
+}
+void wem_Mat4_view(Mat4 out, const Vec3 position, const Vec3 forward, const Vec3 camUp){
+    Vec3 fwd, right, up;
+    wem_Vec3_norm(fwd, forward);
+    wem_Vec3_cross(right, camUp, fwd);
+    wem_Vec3_cross(up, fwd, right);
+    wem_Vec3_inv(fwd, fwd);
+    float tx = wem_Vec3_dot(position, right);
+    float ty = wem_Vec3_dot(position, up);
+    float tz = wem_Vec3_dot(position, fwd);
+    Mat4 outMat = {
+        right[0], up[0], fwd[0], 0,
+        right[1], up[1], fwd[1], 0,
+        right[2], up[2], fwd[2], 0,
+        -tx, -ty, -tz, 1
+    };
+    memcpy(out, outMat, sizeof(Mat4));
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+//  PROJECTION
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void wem_Mat4_ortho(Mat4 out, float zoom, float aspectRatio, float near, float far) {
+    Mat4 outMat = {
+        2.0f / (aspectRatio * 2) * zoom, 0, 0, 0,
+        0, zoom, 0, 0,
+        0, 0, -2.0f / (far - near), 0,
+        0, 0, -(far + near) / (far - near), 1
+    };
+    memcpy(out, outMat, sizeof(Mat4));
+}
+void wem_Mat4_perspective(Mat4 out, float fovDeg, float aspectRatio, float near, float far) {
+    float fov = DEG2RAD * fovDeg;
+    Mat4 outMat = {
+        1.0f / (aspectRatio * tanf(fov / 2)), 0, 0, 0,
+        0, 1.0f / tanf(fov / 2), 0, 0,
+        0, 0, -(far + near) / (far - near), -1,
+        0, 0, -(2 * far * near) / (far - near), 0
+    };
+    memcpy(out, outMat, sizeof(Mat4));
 }
 
 #endif
