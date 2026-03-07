@@ -6,6 +6,9 @@
 #define WEMDEF extern
 
 WEMDEF void wem_Vec4_set(Vec4 out, float x, float y, float z, float w);
+WEMDEF void wem_Vec4_cpy(Vec4 out, const Vec4 v);
+WEMDEF void wem_Vec4_set4F(Vec4 out, const float *f4);
+WEMDEF void wem_Vec4_to4F(float *f4, const Vec4 v);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC
 
@@ -91,6 +94,15 @@ WEMDEF void wem_Vec4_print(const Vec4 v);
 
 void wem_Vec4_set(Vec4 out, float x, float y, float z, float w) {
     out[0] = x; out[1] = y, out[2] = z, out[3] = w;
+}
+void wem_Vec4_cpy(Vec4 out, const Vec4 v) {
+    memcpy(out, v, sizeof(Vec4));
+}
+void wem_Vec4_set4F(Vec4 out, const float *f4) {
+    memcpy(out, f4, sizeof(float) * 4);
+}
+void wem_Vec4_to4F(float *f4, const Vec4 v) {
+    memcpy(f4, v, sizeof(float) * 4);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC

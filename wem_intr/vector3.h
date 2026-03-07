@@ -6,6 +6,9 @@
 #define WEMDEF extern
 
 WEMDEF void wem_Vec3_set(Vec3 out, float x, float y, float z);
+WEMDEF void wem_Vec3_cpy(Vec3 out, const Vec3 v);
+WEMDEF void wem_Vec3_set3F(Vec3 out, float *f3);
+WEMDEF void wem_Vec3_to3F(float *f3, const Vec3 v);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC
 
@@ -87,6 +90,15 @@ WEMDEF void wem_Vec3_print(const Vec3 v);
 
 void wem_Vec3_set(Vec3 out, float x, float y, float z) {
     out[0] = x; out[1] = y, out[2] = z, out[3] = 0;
+}
+void wem_Vec3_cpy(Vec3 out, const Vec3 v) {
+    memcpy(out, v, sizeof(Vec3));
+}
+void wem_Vec3_set3F(Vec3 out, float *f3) {
+    memcpy(out, f3, sizeof(float) * 3);
+}
+void wem_Vec3_to3F(float *f3, const Vec3 v) {
+    memcpy(f3, v, sizeof(float) * 3);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC

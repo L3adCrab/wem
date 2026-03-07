@@ -6,6 +6,9 @@
 #define WEMDEF extern
 
 WEMDEF void wem_Vec2_set(Vec2 out, float x, float y);
+WEMDEF void wem_Vec2_cpy(Vec2 out, const Vec2 v);
+WEMDEF void wem_Vec2_set2F(Vec2 out, float *f2);
+WEMDEF void wem_Vec2_to2F(float *f2, const Vec2 v);
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC
 
@@ -86,7 +89,16 @@ WEMDEF void wem_Vec2_print(const Vec2 v);
 #include "vector.h"
 
 void wem_Vec2_set(Vec2 out, float x, float y) {
-    out[0] = x; out[1] = y, out[2] = 0, out[3] = 0;
+    out[0] = x; out[1] = y;
+}
+void wem_Vec2_cpy(Vec2 out, const Vec2 v) {
+    memcpy(out, v, sizeof(Vec2));
+}
+void wem_Vec2_set2F(Vec2 out, float *f2) {
+    memcpy(out, f2, sizeof(float) * 2);
+}
+void wem_Vec2_to2F(float *f2, const Vec2 v) {
+    memcpy(f2, v, sizeof(float) * 2);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 //  VEC +-*/ VEC
