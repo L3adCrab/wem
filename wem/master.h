@@ -1,0 +1,14 @@
+#ifndef WEM_MASTER_H
+#define WEM_MASTER_H
+
+#include "bezier.h"
+#include "mathf.h"
+#include "datatypes.h"
+#include "macros.h"
+#include "matrix4.h"
+#include "vector.h"
+#include "vector2.h"
+#include "vector3.h"
+#include "vector4.h"
+
+#endif
