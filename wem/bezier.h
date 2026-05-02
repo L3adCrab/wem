@@ -174,7 +174,7 @@ void wem_BezierCubic_evaluate(Vec4 out, const BezierCubic bezier, float t) {
     _end = _mm_load_ps(bezier + 12);
     
     __m128 _t       = _mm_set_ps1(t);
-    __m128 oneMinT  = _mm_set_ps1(1.0f - t);
+    __m128 oneMinT  = _mm_set_ps1(o_t);
     
     //  (beg * (1-t) + han1 * t)(1-t) + (han1 * (1-t) + han2 * t)t
     //  (beg * (1-t) + han1 * t)(1-t)
