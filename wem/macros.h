@@ -10,6 +10,7 @@
 #define PI                  3.14159265359
 #define RAD2DEG             (180.0f / PI)
 #define DEG2RAD             (PI / 180.0f)
+#define RAD(D)              (D * (PI / 180.0))
 
 #define CLAMP(X, Min, Max)      (X < Min ? Min : X > Max ? Max : X)
 
