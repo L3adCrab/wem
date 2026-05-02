@@ -615,7 +615,7 @@ bool wem_Vec_inRange(const Vec v1, const Vec v2, float range) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void wem_Vec_print(const Vec v) {
-    printf("%f %f %f %f\n", v[0], v[1], v[2], v[3]);
+    printf("VEC     %f %f %f %f\n", v[0], v[1], v[2], v[3]);
 }
 
 #endif

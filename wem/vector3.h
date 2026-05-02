@@ -278,7 +278,7 @@ bool wem_Vec3_inRange(const Vec3 v1, const Vec3 v2, float range) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void wem_Vec3_print(const Vec3 v) {
-    printf("(%f %f %f %f)", v[0], v[1], v[2], v[3]);
+    printf("VEC3    %f %f %f\n", v[0], v[1], v[2]);
 }
 
 #endif
