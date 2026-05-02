@@ -229,10 +229,10 @@ void wem_Vec2_inv(Vec2 out, const Vec2 v) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void wem_Vec2_perp(Vec2 out, const Vec2 v) {
-    out[0] = v[1]; out[1] = v[0];
+    out[0] = -v[1]; out[1] = v[0];
 }
 void wem_Vec2_perpN(Vec2 out, const Vec2 v) {
-    out[0] = v[1]; out[1] = v[0];
+    out[0] = -v[1]; out[1] = v[0];
     wem_Vec2_norm(out, out);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,7 +280,7 @@ bool wem_Vec2_inRange(const Vec2 v1, const Vec2 v2, float range) {
 /////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void wem_Vec2_print(const Vec2 v) {
-    printf("(%f %f %f %f)", v[0], v[1], v[2], v[3]);
+    printf("VEC2    %f %f\n", v[0], v[1]);
 }
 
 #endif
